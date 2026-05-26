@@ -11,7 +11,6 @@
             padding: 15px; 
             background-color: #f4f4f9; 
             margin: 0;
-            /* 🛑 關鍵修正：防止 iOS Safari 自動暴走放大 div 內的字體 */
             -webkit-text-size-adjust: 100%;
         }
         .container { 
@@ -131,8 +130,10 @@
         tr.main-row:hover { background-color: #fdf0f0; }
         td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
         
-        /* 📅 日期與時間專用樣式 */
-        th.date-col, td.date-col { text-align: center; } /* 讓第一欄的日期和時間置中 */
+        /* 📅 欄位寬度與對齊微調 */
+        th.date-col, td.date-col { text-align: center; } 
+        th.job-col, td.job-col { width: 1%; white-space: nowrap; padding-right: 5px; } /* 緊縮工令欄位 */
+        th.status-col, td.status-col { width: 1%; white-space: nowrap; padding-left: 5px; } /* 緊縮狀態欄位 */
         .time-text { color: #777; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
@@ -156,7 +157,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        /* 強制統整卡片內文字大小，避免手機上跑版 */
         .issue-card, .issue-card strong, .issue-desc, .issue-list, .issue-list li {
             font-size: 14px; 
             line-height: 1.5;
@@ -241,8 +241,8 @@
             <thead>
                 <tr>
                     <th class="date-col">日期</th>
-                    <th>工令號碼</th>
-                    <th>稽核結果</th>
+                    <th class="job-col">工令號碼</th>
+                    <th class="status-col">稽核結果</th>
                     <th>檔案名稱</th>
                 </tr>
             </thead>
@@ -375,8 +375,8 @@
                 html += `
                     <tr class="main-row" onclick="toggleDetails('${docId}')">
                         <td class="date-col">${shortDateStr}<br><span class="time-text">${timeStr}</span></td>
-                        <td><strong>${data.job_no}</strong></td>
-                        <td class="${statusClass}">${data.status}</td>
+                        <td class="job-col"><strong>${data.job_no}</strong></td>
+                        <td class="status-col ${statusClass}">${data.status}</td>
                         <td class="filename-col" title="${data.filename}">${data.filename}</td>
                     </tr>
                     <tr id="details-${docId}" class="details-row">
