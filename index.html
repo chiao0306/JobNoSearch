@@ -22,42 +22,135 @@
         }
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
         
-        .search-box { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; align-items: flex-end; }
-        .input-group { display: flex; flex-direction: column; gap: 5px; flex: 2; min-width: 140px; }
-        .input-group label { font-size: 0.85rem; color: #666; font-weight: bold; }
-        input[type="text"], select, button { padding: 10px 12px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; width: 100%; }
-        input:focus, select:focus { outline: none; border-color: #ff4b4b; box-shadow: 0 0 0 2px rgba(255,75,75,0.2); }
-        .btn-group { display: flex; gap: 10px; flex: 1; min-width: 200px; }
-        button { background-color: #ff4b4b; color: white; border: none; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+        /* 🔍 主要搜尋區塊排版 (永遠顯示) */
+        .search-box { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 15px; 
+            flex-wrap: wrap; 
+            align-items: flex-end;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 2;
+            min-width: 140px;
+        }
+        .input-group label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: bold;
+        }
+        input[type="text"], select, button { 
+            padding: 10px 12px; 
+            font-size: 15px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box;
+            width: 100%;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff4b4b;
+            box-shadow: 0 0 0 2px rgba(255,75,75,0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+        button { 
+            background-color: #ff4b4b; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background-color 0.2s;
+        }
         button:hover { background-color: #e03e3e; }
         button.secondary { background-color: #6c757d; }
         button.secondary:hover { background-color: #5a6268; }
 
-        details.advanced-filter { margin-bottom: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 15px; }
-        details.advanced-filter summary { cursor: pointer; font-weight: bold; color: #555; outline: none; user-select: none; font-size: 14px; }
-        .filter-content { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; align-items: flex-end; padding-top: 10px; border-top: 1px dashed #eee; }
+        /* 📁 摺疊進階搜尋區塊 */
+        details.advanced-filter {
+            margin-bottom: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+        details.advanced-filter summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            outline: none;
+            user-select: none;
+            font-size: 14px;
+        }
+        .filter-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: flex-end;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
 
+        /* 📅 優化版日曆按鈕 */
         .date-input-wrapper { display: flex; gap: 8px; width: 100%; }
         .calendar-btn-container { position: relative; width: 44px; flex-shrink: 0; }
-        .calendar-icon-btn { width: 100%; height: 100%; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 6px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; padding: 0; color: #333; margin: 0; }
-        .hidden-date-picker { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .calendar-icon-btn {
+            width: 100%; height: 100%; background-color: #f8f9fa; border: 1px solid #ccc;
+            border-radius: 6px; font-size: 1.2rem; display: flex; align-items: center;
+            justify-content: center; padding: 0; color: #333; margin: 0;
+        }
+        .hidden-date-picker {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 10;
+        }
 
-        .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #eee; }
+        /* 📊 表格外層包裝 */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
         table { width: 100%; min-width: 650px; border-collapse: collapse; }
+        
         th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; white-space: nowrap; font-size: 14px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
         td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
 
-        /* 🔥 [調整] 將卡片內部文字全面微調為與表格一致的 14px */
+        /* 📋 明細區塊設計 */
         .details-row { display: none; }
-        .details-content { padding: 10px; background-color: #fafafc; margin: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); white-space: normal; font-size: 14px; }
+        .details-content { 
+            padding: 12px; 
+            background-color: #fafafc; 
+            margin: 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            white-space: normal;
+        }
         .status-pass { color: #28a745; font-weight: bold; }
         .status-fail { color: #dc3545; font-weight: bold; }
         
-        .issue-card { background: white; border-left: 4px solid #dc3545; padding: 6px 10px; margin-bottom: 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .issue-card { 
+            background: white; 
+            border-left: 4px solid #dc3545; 
+            padding: 8px 12px; 
+            margin-bottom: 8px; 
+            border-radius: 4px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
 
+        /* 📱 手機版專屬樣式 */
         @media (max-width: 600px) {
             .search-box { flex-direction: column; gap: 10px; align-items: stretch; }
             .btn-group { flex-direction: row; }
@@ -87,9 +180,9 @@
         <summary>▶ 展開進階篩選 (日期、筆數、排序)</summary>
         <div class="filter-content">
             <div class="input-group">
-                <label>📅 開始日期 (1150526)</label>
+                <label>📅 開始日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="startDate" placeholder="1150526" maxlength="9">
+                    <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
                     <div class="calendar-btn-container">
                         <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
@@ -98,9 +191,9 @@
             </div>
             
             <div class="input-group">
-                <label>📅 結束日期 (1150526)</label>
+                <label>📅 結束日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="endDate" placeholder="1150526" maxlength="9">
+                    <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
                     <div class="calendar-btn-container">
                         <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
@@ -149,6 +242,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // ⚠️ 您的 Firebase 設定
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
         authDomain: "vendor-audit-api.firebaseapp.com",
@@ -162,6 +256,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // 🔥 監聽工令輸入框的 Enter 鍵事件
     document.getElementById("jobInput").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
             event.preventDefault(); 
@@ -180,13 +275,17 @@
     function parseROCDate(dateStr, isEndOfDay = false) {
         if (!dateStr) return null;
         const cleanStr = dateStr.replace(/\D/g, '').trim();
+        
         if (cleanStr.length === 7) {
             const year = parseInt(cleanStr.substring(0, 3)) + 1911; 
             const month = parseInt(cleanStr.substring(3, 5)) - 1;   
             const day = parseInt(cleanStr.substring(5, 7));
             const dateObj = new Date(year, month, day);
-            if (isEndOfDay) dateObj.setHours(23, 59, 59, 999);
-            else dateObj.setHours(0, 0, 0, 0);
+            if (isEndOfDay) {
+                dateObj.setHours(23, 59, 59, 999);
+            } else {
+                dateObj.setHours(0, 0, 0, 0);
+            }
             return dateObj;
         }
         return null;
@@ -208,10 +307,13 @@
         try {
             if (!showAll) {
                 if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
+                
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
+                
                 if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
                 if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
+                
                 if (startDate) queryConstraints.push(where("timestamp", ">=", startDate));
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
             }
@@ -241,21 +343,20 @@
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
                 
-                // 🔥 將內容字體全面縮小到 14px，padding 調整緊湊
-                let detailsHtml = `<div style="color: #666; font-size: 14px; margin-bottom: 6px; border-bottom: 1px dashed #ddd; padding-bottom: 4px;">
-                                   🕒 稽核時間：${fullDateTimeStr}
+                let detailsHtml = `<div style="color: #666; font-size: 14px; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 6px;">
+                                   🕒 精確稽核時間：${fullDateTimeStr}
                                 </div>`;
 
                 if (issues.length === 0) {
-                    detailsHtml += '<p style="font-size: 14px; margin: 2px 0;">✅ 合格。</p>';
+                    detailsHtml += '<p style="font-size: 14px; margin: 4px 0;">✅ 系統判定全數合格，無異常紀錄。</p>';
                 } else {
                     issues.forEach(issue => {
-                        let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:1px; font-size:13px;"><b>${f.id}:</b> ${f.val} <span style="color:#666;">(${f.calc || f.target})</span></li>`).join('') : '';
+                        let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:2px;"><b>${f.id}:</b> ${f.val} <br><span style="color:#666; font-size:13px;">(基準: ${f.calc || f.target})</span></li>`).join('') : '';
                         detailsHtml += `
                             <div class="issue-card">
                                 <strong style="font-size: 14px;">${issue.issue_type} - ${issue.item} <span style="color:#666; font-weight:normal;">(P.${issue.page})</span></strong>
-                                <p style="margin: 2px 0; color: #444; font-size: 14px;">${issue.common_reason}</p>
-                                <ul style="margin: 2px 0; padding-left: 20px;">${failureTable}</ul>
+                                <p style="margin: 6px 0; color: #444; font-size: 14px;">${issue.common_reason}</p>
+                                <ul style="margin: 4px 0; padding-left: 20px; font-size: 14px;">${failureTable}</ul>
                             </div>
                         `;
                     });
@@ -278,15 +379,27 @@
                 `;
             });
 
-            if(html === '') html = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
+            if(html === '') {
+                html = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
+            }
+
             document.getElementById('resultTableBody').innerHTML = html;
+            
         } catch (error) {
             console.error("查詢失敗:", error);
-            if (error.message.includes('index')) {
+            if (error.message.includes('index') || error.message.includes('Index')) {
                 const urlMatch = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-                document.getElementById('resultTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;"><a href="${urlMatch[0]}" target="_blank" style="color:blue; font-size:14px;">👉 點我建立 Firebase 索引</a></td></tr>`;
+                let errorHtml = `<tr><td colspan="4" style="text-align:center; padding: 40px 20px;">`;
+                errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0; font-size: 16px;">⚠️ 系統需要建立交叉查詢索引</h3>`;
+                errorHtml += `<p style="color: #555; font-size: 14px;">因為您剛剛使用了「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
+                if (urlMatch) {
+                    errorHtml += `<a href="${urlMatch[0]}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px;">👉 點我前往 Firebase 自動建立索引</a>`;
+                }
+                errorHtml += `</td></tr>`;
+                document.getElementById('resultTableBody').innerHTML = errorHtml;
             } else {
-                alert("查詢發生錯誤");
+                alert("查詢發生錯誤，請檢查網路連線或重新整理。");
+                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查詢失敗</td></tr>';
             }
         } finally {
             document.getElementById('loading').style.display = 'none';
@@ -295,9 +408,14 @@
 
     window.toggleDetails = function(docId) {
         const row = document.getElementById(`details-${docId}`);
-        row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
+        if (row.style.display === 'table-row') {
+            row.style.display = 'none';
+        } else {
+            row.style.display = 'table-row';
+        }
     }
     
+    // 網頁載入時自動拉取最新資料
     window.onload = () => window.searchLogs(true);
 </script>
 </body>
