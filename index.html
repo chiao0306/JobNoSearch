@@ -124,16 +124,31 @@
         }
         table { width: 100%; min-width: 650px; border-collapse: collapse; }
         
-        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; white-space: nowrap; font-size: 14px; }
+        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 14px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
-        td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
         
-        /* 📅 欄位寬度與對齊微調 */
-        th.date-col, td.date-col { text-align: center; } 
-        th.job-col, td.job-col { width: 1%; white-space: nowrap; padding-right: 5px; } /* 緊縮工令欄位 */
-        th.status-col, td.status-col { width: 1%; white-space: nowrap; padding-left: 5px; } /* 緊縮狀態欄位 */
+        /* 📐 欄位寬度與對齊微調 (精準控制間距) */
+        th.date-col, td.date-col { 
+            width: 1%; white-space: nowrap; text-align: center; 
+            padding-left: 15px; padding-right: 5px; /* 右側縮減，讓工令靠過來 */
+        }
+        th.job-col, td.job-col { 
+            width: 1%; white-space: nowrap; 
+            padding-left: 10px; padding-right: 25px; /* 右側拉開，遠離狀態欄位 */
+        }
+        th.status-col, td.status-col { 
+            width: 1%; white-space: nowrap; 
+            padding-left: 10px; padding-right: 25px; /* 右側拉開，維持與前一欄相同的間距 */
+        }
+        th.filename-col { 
+            padding-left: 10px; padding-right: 15px; white-space: nowrap; 
+        }
+        td.filename-col { 
+            padding-left: 10px; padding-right: 15px;
+            max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; white-space: nowrap; 
+        }
         .time-text { color: #777; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
@@ -243,7 +258,7 @@
                     <th class="date-col">日期</th>
                     <th class="job-col">工令號碼</th>
                     <th class="status-col">稽核結果</th>
-                    <th>檔案名稱</th>
+                    <th class="filename-col">檔案名稱</th>
                 </tr>
             </thead>
             <tbody id="resultTableBody">
