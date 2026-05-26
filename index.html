@@ -122,17 +122,19 @@
             border-radius: 8px;
             border: 1px solid #eee;
         }
-        table { width: 100%; min-width: 650px; border-collapse: collapse; }
+        
+        /* 💡 修正點：移除了 min-width: 650px，解決手機版多餘的橫向滑動空間 */
+        table { width: 100%; border-collapse: collapse; } 
         
         th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 14px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
         
-        /* 📐 欄位寬度與對齊微調 (精準控制間距) */
+        /* 📐 欄位寬度與對齊微調 */
         th.date-col, td.date-col { 
             width: 1%; white-space: nowrap; text-align: center; 
-            padding-left: 20px; /* 微調：增加左側留白，避免貼壁 */
+            padding-left: 20px; 
             padding-right: 15px;
         }
         th.job-col, td.job-col { 
@@ -140,7 +142,7 @@
             padding-left: 15px; padding-right: 25px; 
         }
         th.status-col, td.status-col { 
-            width: auto; /* 讓狀態欄位吃下剩餘空間 */
+            width: auto; 
             padding-left: 10px; padding-right: 25px; 
         }
         .time-text { color: #777; font-size: 0.9em; }
