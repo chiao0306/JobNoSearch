@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>工令稽核查詢系統</title>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
     
     <style>
         body { 
@@ -24,71 +22,83 @@
         }
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
         
-        /* 搜尋區塊排版 */
+        /* 🔍 搜尋區塊排版 (群組化設計) */
         .search-box { 
             display: flex; 
-            gap: 10px; 
+            gap: 15px; 
             margin-bottom: 20px; 
             flex-wrap: wrap; 
+            align-items: flex-end; /* 讓按鈕跟輸入框底部對齊 */
         }
-        input, button { 
-            padding: 12px; 
-            font-size: 16px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 140px;
+        }
+        .input-group label {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: bold;
+        }
+        input, select, button { 
+            padding: 10px 12px; 
+            font-size: 15px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
             box-sizing: border-box;
+            width: 100%;
         }
-        input { flex: 1; min-width: 200px; }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff4b4b;
+            box-shadow: 0 0 0 2px rgba(255,75,75,0.2);
+        }
         
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
         button { 
             background-color: #ff4b4b; 
             color: white; 
             border: none; 
             cursor: pointer; 
             font-weight: bold; 
-            min-width: 100px;
             transition: background-color 0.2s;
         }
         button:hover { background-color: #e03e3e; }
         button.secondary { background-color: #6c757d; }
         button.secondary:hover { background-color: #5a6268; }
 
-        /* 表格外層包裝 (達成手機版左右滑動的關鍵) */
+        /* 📊 表格外層包裝 (手機版左右滑動) */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* 讓 iOS 滑動更順暢 */
+            -webkit-overflow-scrolling: touch;
             border-radius: 8px;
             border: 1px solid #eee;
         }
-
         table { 
             width: 100%; 
-            min-width: 650px; /* 強制表格最小寬度，低於此寬度就啟動滑動 */
+            min-width: 650px; 
             border-collapse: collapse; 
         }
         th, td { 
             border-bottom: 1px solid #eee; 
             padding: 12px 15px; 
             text-align: left; 
-            white-space: nowrap; /* 強制文字不換行 */
+            white-space: nowrap; 
         }
-        th { 
-            background-color: #f8f9fa; 
-            color: #555;
-            font-weight: 600;
-        }
+        th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
-        
-        /* 針對檔名欄位做太長省略 */
-        td.filename-col {
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 明細區塊設計 */
+        /* 📋 明細區塊設計 */
         .details-row { display: none; }
         .details-content { 
             padding: 15px; 
@@ -96,7 +106,7 @@
             border-radius: 8px;
             margin: 10px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            white-space: normal; /* 明細區塊允許換行 */
+            white-space: normal;
         }
         .status-pass { color: #28a745; font-weight: bold; }
         .status-fail { color: #dc3545; font-weight: bold; }
@@ -110,10 +120,10 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* 📱 手機版專屬樣式 (寬度小於 600px 時觸發) */
+        /* 📱 手機版專屬樣式 */
         @media (max-width: 600px) {
-            .search-box { flex-direction: column; gap: 8px; }
-            input, button { width: 100%; }
+            .search-box { flex-direction: column; gap: 12px; align-items: stretch; }
+            .btn-group { flex-direction: column; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
         }
@@ -125,11 +135,42 @@
     <h2>🏭 工令稽核紀錄查詢</h2>
     
     <div class="search-box">
-        <input type="text" id="jobInput" placeholder="輸入工令號碼 (選填)...">
-        <input type="date" id="startDate" title="開始日期">
-        <input type="date" id="endDate" title="結束日期">
-        <button onclick="searchLogs()">🔍 查詢</button>
-        <button class="secondary" onclick="searchLogs(true)">📋 顯示全部</button>
+        <div class="input-group">
+            <label>🔍 工令號碼</label>
+            <input type="text" id="jobInput" placeholder="輸入工令 (選填)...">
+        </div>
+        
+        <div class="input-group">
+            <label>📅 開始日期</label>
+            <input type="text" id="startDate" placeholder="例: 115.05.26">
+        </div>
+        
+        <div class="input-group">
+            <label>📅 結束日期</label>
+            <input type="text" id="endDate" placeholder="例: 115.05.26">
+        </div>
+
+        <div class="input-group">
+            <label>📋 顯示筆數</label>
+            <select id="limitSelect">
+                <option value="20">20 筆</option>
+                <option value="50" selected>50 筆</option>
+                <option value="100">100 筆</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>↕️ 排序方式</label>
+            <select id="sortSelect">
+                <option value="desc">時間新 ➔ 舊</option>
+                <option value="asc">時間舊 ➔ 新</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="searchLogs()">🔍 查詢</button>
+            <button class="secondary" onclick="searchLogs(true)">顯示全部</button>
+        </div>
     </div>
 
     <div id="loading" style="display: none; text-align: center; padding: 20px; color: #666;">🔄 資料載入中...</div>
@@ -154,7 +195,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ⚠️⚠️ 請把這裡換成你原本的 firebaseConfig ⚠️⚠️
+    // ⚠️⚠️ 請替換為您的 Firebase Web 應用程式設定 ⚠️⚠️
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
         authDomain: "vendor-audit-api.firebaseapp.com",
@@ -168,25 +209,57 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // 民國年字串轉為 JavaScript Date 物件 (支援 115.05.26 或 115/05/26)
+    function parseROCDate(dateStr, isEndOfDay = false) {
+        if (!dateStr) return null;
+        const cleanStr = dateStr.replace(/\./g, '/').replace(/-/g, '/').trim();
+        const parts = cleanStr.split('/');
+        if (parts.length >= 3) {
+            const year = parseInt(parts[0]) + 1911; // 轉西元年
+            const month = parseInt(parts[1]) - 1;   // JS 月份從 0 開始
+            const day = parseInt(parts[2]);
+            const dateObj = new Date(year, month, day);
+            if (isEndOfDay) {
+                dateObj.setHours(23, 59, 59, 999);
+            } else {
+                dateObj.setHours(0, 0, 0, 0);
+            }
+            return dateObj;
+        }
+        return null;
+    }
+
     window.searchLogs = async function(showAll = false) {
         document.getElementById('loading').style.display = 'block';
         document.getElementById('resultTableBody').innerHTML = '';
         
         const jobNo = document.getElementById('jobInput').value.trim().toUpperCase();
+        const startStr = document.getElementById('startDate').value;
+        const endStr = document.getElementById('endDate').value;
+        const limitVal = parseInt(document.getElementById('limitSelect').value);
+        const sortOrder = document.getElementById('sortSelect').value;
+
         const logsRef = collection(db, "audit_logs");
-        let q;
+        let queryConstraints = [];
 
         try {
-            if (showAll || (!jobNo && !document.getElementById('startDate').value)) {
-                q = query(logsRef, orderBy("timestamp", "desc"), limit(50));
-            } else if (jobNo) {
-                q = query(logsRef, where("job_no", "==", jobNo), orderBy("timestamp", "desc"));
-            } else {
-                alert("目前示範程式以工令查詢為主，純日期區間需至後台建立索引。");
-                document.getElementById('loading').style.display = 'none';
-                return;
+            // 處理「顯示全部」或「正常查詢」
+            if (!showAll) {
+                if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
+                
+                const startDate = parseROCDate(startStr);
+                const endDate = parseROCDate(endStr, true);
+                
+                if (startDate) queryConstraints.push(where("timestamp", ">=", startDate));
+                if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
             }
 
+            // 加入排序與筆數限制
+            queryConstraints.push(orderBy("timestamp", sortOrder));
+            queryConstraints.push(limit(limitVal));
+
+            // 組裝查詢
+            const q = query(logsRef, ...queryConstraints);
             const querySnapshot = await getDocs(q);
             let html = '';
 
@@ -194,8 +267,13 @@
                 const data = doc.data();
                 const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
                 
-                // 讓時間顯示更短一點 (MM/DD HH:mm) 節省手機空間
-                const dateStr = `${dateObj.getMonth()+1}/${dateObj.getDate()} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+                // 將時間轉回民國年格式 (YYY.MM.DD HH:mm)
+                const rocYear = dateObj.getFullYear() - 1911;
+                const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const dd = String(dateObj.getDate()).padStart(2, '0');
+                const hh = String(dateObj.getHours()).padStart(2, '0');
+                const min = String(dateObj.getMinutes()).padStart(2, '0');
+                const dateStr = `${rocYear}.${mm}.${dd} ${hh}:${min}`;
                 
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
@@ -241,7 +319,12 @@
             
         } catch (error) {
             console.error("查詢失敗:", error);
-            alert("查詢失敗，請檢查主控台錯誤訊息。");
+            // 💡 防呆機制：如果同時用「工令」+「日期區間」去查，Firebase 會要求建立複合索引
+            if (error.message.includes('index')) {
+                alert("⚠️ 系統提示：因為您同時使用了「工令」與「日期」查詢，Firebase 需要建立資料庫索引。\n\n請開啟 F12 (或手機版右下角齒輪)，點擊錯誤訊息裡面的 Firebase 連結來自動建立索引 (約需等待 3 分鐘)。");
+            } else {
+                alert("查詢失敗，請檢查主控台錯誤訊息。");
+            }
         } finally {
             document.getElementById('loading').style.display = 'none';
         }
@@ -256,6 +339,7 @@
         }
     }
     
+    // 網頁載入時自動拉取最新資料
     window.onload = () => window.searchLogs(true);
 </script>
 </body>
