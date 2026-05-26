@@ -44,7 +44,7 @@
         }
         .date-input-wrapper {
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
         input[type="text"], select, button { 
             padding: 10px 12px; 
@@ -54,20 +54,42 @@
             box-sizing: border-box;
             width: 100%;
         }
-        /* 隱藏原生日期框的輸入區，只露出日曆按鈕 */
-        input[type="date"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background-color: #f8f9fa;
-            width: 42px;
-            cursor: pointer;
-        }
-        
         input:focus, select:focus {
             outline: none;
             border-color: #ff4b4b;
             box-shadow: 0 0 0 2px rgba(255,75,75,0.2);
+        }
+
+        /* 📅 優化版日曆按鈕 (將原生 input 隱藏在美觀的按鈕上方) */
+        .calendar-btn-container {
+            position: relative;
+            width: 48px;
+            flex-shrink: 0;
+        }
+        .calendar-icon-btn {
+            width: 100%;
+            height: 100%;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin: 0; /* 消除某些瀏覽器的預設 margin */
+        }
+        .hidden-date-picker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* 完全透明，但保留點擊功能 */
+            cursor: pointer;
+            z-index: 10;
         }
         
         .btn-group {
@@ -111,7 +133,7 @@
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
         
-        /* 檔案名稱長度限制 (現在移到最後一欄) */
+        /* 檔案名稱長度限制 */
         td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
@@ -153,22 +175,28 @@
     <div class="search-box">
         <div class="input-group">
             <label>🔍 工令號碼</label>
-            <input type="text" id="jobInput" placeholder="輸入部分號碼即可 (如 707)">
+            <input type="text" id="jobInput" placeholder="輸入完整工令單號">
         </div>
         
         <div class="input-group">
             <label>📅 開始日期</label>
             <div class="date-input-wrapper">
-                <input type="text" id="startDate" placeholder="115.05.26">
-                <input type="date" onchange="pickDate('startDate', this.value); this.value='';">
+                <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
+                <div class="calendar-btn-container">
+                    <button type="button" class="calendar-icon-btn">📅</button>
+                    <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
+                </div>
             </div>
         </div>
         
         <div class="input-group">
             <label>📅 結束日期</label>
             <div class="date-input-wrapper">
-                <input type="text" id="endDate" placeholder="115.05.26">
-                <input type="date" onchange="pickDate('endDate', this.value); this.value='';">
+                <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
+                <div class="calendar-btn-container">
+                    <button type="button" class="calendar-icon-btn">📅</button>
+                    <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
+                </div>
             </div>
         </div>
 
@@ -217,7 +245,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ⚠️⚠️ 請替換為您的 Firebase Web 應用程式設定 ⚠️⚠️
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
         authDomain: "vendor-audit-api.firebaseapp.com",
@@ -231,23 +258,24 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 處理日曆選單回傳的西元日期 (YYYY-MM-DD)，轉成民國年放入文字框
+    // 日曆選單回傳處理：轉成 7 碼民國年 (例：1150526)
     window.pickDate = function(targetId, dateVal) {
         if (!dateVal) return;
         const parts = dateVal.split("-");
         const rocYear = parseInt(parts[0]) - 1911;
-        document.getElementById(targetId).value = `${rocYear}.${parts[1]}.${parts[2]}`;
+        document.getElementById(targetId).value = `${rocYear}${parts[1]}${parts[2]}`;
     }
 
-    // 文字框的民國年字串，轉成 JS Date 物件供資料庫查詢
+    // 將 7 碼純數字民國年 (1150526) 轉成 JS Date 物件
     function parseROCDate(dateStr, isEndOfDay = false) {
         if (!dateStr) return null;
-        const cleanStr = dateStr.replace(/\./g, '/').replace(/-/g, '/').trim();
-        const parts = cleanStr.split('/');
-        if (parts.length >= 3) {
-            const year = parseInt(parts[0]) + 1911; 
-            const month = parseInt(parts[1]) - 1;   
-            const day = parseInt(parts[2]);
+        // 聰明防呆：濾掉所有非數字字元 (不小心打點或斜線也會自動修正)
+        const cleanStr = dateStr.replace(/\D/g, '').trim();
+        
+        if (cleanStr.length === 7) {
+            const year = parseInt(cleanStr.substring(0, 3)) + 1911; 
+            const month = parseInt(cleanStr.substring(3, 5)) - 1;   
+            const day = parseInt(cleanStr.substring(5, 7));
             const dateObj = new Date(year, month, day);
             if (isEndOfDay) {
                 dateObj.setHours(23, 59, 59, 999);
@@ -274,11 +302,15 @@
 
         try {
             if (!showAll) {
-                // 恢復 Firebase 原生精準搜尋 (==)
+                // 原生 Firebase 精準搜尋 (最快、最省額度)
                 if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
                 
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
+                
+                // 防呆提醒
+                if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
+                if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
                 
                 if (startDate) queryConstraints.push(where("timestamp", ">=", startDate));
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
@@ -303,8 +335,10 @@
                 const hh = String(dateObj.getHours()).padStart(2, '0');
                 const min = String(dateObj.getMinutes()).padStart(2, '0');
                 
-                const shortDateStr = `${rocYear}.${mm}.${dd}`;
-                const fullDateTimeStr = `${rocYear}.${mm}.${dd} ${hh}:${min}`;
+                // 表格列表顯示 7 碼純數字
+                const shortDateStr = `${rocYear}${mm}${dd}`;
+                // 明細裡顯示完整時間
+                const fullDateTimeStr = `${rocYear}${mm}${dd} ${hh}:${min}`;
                 
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
