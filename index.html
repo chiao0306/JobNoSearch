@@ -11,6 +11,8 @@
             padding: 15px; 
             background-color: #f4f4f9; 
             margin: 0;
+            /* 🛑 關鍵修正：防止 iOS Safari 自動暴走放大 div 內的字體 */
+            -webkit-text-size-adjust: 100%;
         }
         .container { 
             max-width: 1000px; 
@@ -129,7 +131,9 @@
         tr.main-row:hover { background-color: #fdf0f0; }
         td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
         
-        .time-text { color: #777; font-size: 0.9em; } /* 列表斷行時間的樣式 */
+        /* 📅 日期與時間專用樣式 */
+        th.date-col, td.date-col { text-align: center; } /* 讓第一欄的日期和時間置中 */
+        .time-text { color: #777; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
         .details-row { display: none; }
@@ -152,9 +156,10 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        /* 統整卡片內文字大小，避免手機上跑版 */
-        .issue-card strong, .issue-desc, .issue-list {
+        /* 強制統整卡片內文字大小，避免手機上跑版 */
+        .issue-card, .issue-card strong, .issue-desc, .issue-list, .issue-list li {
             font-size: 14px; 
+            line-height: 1.5;
         }
         .issue-desc { margin: 6px 0; color: #444; }
         .issue-list { margin: 4px 0; padding-left: 20px; }
@@ -166,11 +171,6 @@
             .filter-content { flex-direction: column; align-items: stretch; gap: 10px; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
-            
-            /* 確保手機版的列表跟卡片字體大小完全一致 */
-            th, td, .issue-card strong, .issue-desc, .issue-list { 
-                font-size: 13px; 
-            }
         }
     </style>
 </head>
@@ -240,7 +240,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>日期</th>
+                    <th class="date-col">日期</th>
                     <th>工令號碼</th>
                     <th>稽核結果</th>
                     <th>檔案名稱</th>
@@ -374,7 +374,7 @@
 
                 html += `
                     <tr class="main-row" onclick="toggleDetails('${docId}')">
-                        <td>${shortDateStr}<br><span class="time-text">${timeStr}</span></td>
+                        <td class="date-col">${shortDateStr}<br><span class="time-text">${timeStr}</span></td>
                         <td><strong>${data.job_no}</strong></td>
                         <td class="${statusClass}">${data.status}</td>
                         <td class="filename-col" title="${data.filename}">${data.filename}</td>
