@@ -274,7 +274,9 @@
 
         try {
             if (!showAll) {
-                // ⚠️ 移除了 Firestore 原生的 where("job_no", "==") 條件，改由前端模糊過濾
+                // 恢復 Firebase 原生精準搜尋 (==)
+                if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
+                
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
                 
@@ -282,53 +284,32 @@
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
             }
 
-            // 為了支援前端模糊搜尋，如果使用者輸入了工令，我們從資料庫多抓一點近期資料來過濾
-            let fetchLimit = jobNo && !showAll ? 300 : limitVal;
-            
             queryConstraints.push(orderBy("timestamp", sortOrder));
-            queryConstraints.push(limit(fetchLimit));
+            queryConstraints.push(limit(limitVal));
 
             const q = query(logsRef, ...queryConstraints);
             const querySnapshot = await getDocs(q);
             
-            // 將結果轉為陣列，並在這裡進行「模糊比對 (includes)」
-            let filteredResults = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                // SQL LIKE 效果：只要字串包含輸入的內容，就允許通過
-                if (jobNo && !showAll && !data.job_no.includes(jobNo)) {
-                    return; 
-                }
-                filteredResults.push({ id: doc.id, data: data });
-            });
-
-            // 裁切至使用者選擇的顯示筆數 (例如只顯示前 50 筆)
-            filteredResults = filteredResults.slice(0, limitVal);
-
             let html = '';
 
-            filteredResults.forEach((docObj) => {
-                const data = docObj.data;
-                const docId = docObj.id;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const docId = doc.id;
                 const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
                 
                 const rocYear = dateObj.getFullYear() - 1911;
                 const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
                 const dd = String(dateObj.getDate()).padStart(2, '0');
-                const hh = String(dateObj.getHours()).padStart(2, '0'); // 24小時制
+                const hh = String(dateObj.getHours()).padStart(2, '0');
                 const min = String(dateObj.getMinutes()).padStart(2, '0');
                 
-                // 表格上只顯示日期，節省空間
                 const shortDateStr = `${rocYear}.${mm}.${dd}`;
-                // 明細裡顯示完整時間
                 const fullDateTimeStr = `${rocYear}.${mm}.${dd} ${hh}:${min}`;
                 
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
                 
-                let detailsHtml = '';
-                // 將精確時間放入展開的明細卡片最上方
-                detailsHtml += `<div style="color: #666; font-size: 0.9em; margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px;">
+                let detailsHtml = `<div style="color: #666; font-size: 0.9em; margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px;">
                                    🕒 精確稽核時間：${fullDateTimeStr}
                                 </div>`;
 
@@ -347,7 +328,6 @@
                     });
                 }
 
-                // 調整順序：日期 -> 工令 -> 狀態 -> 檔名
                 html += `
                     <tr class="main-row" onclick="toggleDetails('${docId}')">
                         <td>${shortDateStr}</td>
