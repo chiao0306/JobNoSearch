@@ -71,7 +71,7 @@
     const db = getFirestore(app);
 
     // 將查詢功能綁定到全域變數，讓 HTML 的 onclick 可以呼叫
-    window.searchLogs = async async function(showAll = false) {
+    window.searchLogs = async function(showAll = false) {
         document.getElementById('loading').style.display = 'block';
         document.getElementById('resultTableBody').innerHTML = '';
         
