@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工令稽核查詢系統</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        input, button { padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #ff4b4b; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #e03e3e; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        tr.main-row { cursor: pointer; transition: background-color 0.2s; }
+        tr.main-row:hover { background-color: #fdf0f0; }
+        .details-row { display: none; background-color: #fafafa; }
+        .details-content { padding: 15px; border-left: 4px solid #ff4b4b; margin: 10px; }
+        .status-pass { color: green; font-weight: bold; }
+        .status-fail { color: red; font-weight: bold; }
+        .issue-card { background: white; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏭 工令稽核紀錄查詢</h2>
+    
+    <div class="search-box">
+        <input type="text" id="jobInput" placeholder="輸入工令號碼 (選填)...">
+        <input type="date" id="startDate">
+        <input type="date" id="endDate">
+        <button onclick="searchLogs()">🔍 查詢</button>
+        <button onclick="searchLogs(true)" style="background-color: #666;">📋 顯示全部</button>
+    </div>
+
+    <div id="loading" style="display: none;">資料載入中...</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>日期時間</th>
+                <th>工令號碼</th>
+                <th>檔案名稱</th>
+                <th>稽核結果</th>
+            </tr>
+        </thead>
+        <tbody id="resultTableBody">
+            </tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ⚠️ 請替換為你 Firebase 後台提供的 Web 應用程式設定
+    const firebaseConfig = {
+        apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
+        authDomain: "vendor-audit-api.firebaseapp.com",
+        projectId: "vendor-audit-api",
+        storageBucket: "vendor-audit-api.firebasestorage.app",
+        messagingSenderId: "823947357968",
+        appId: "1:823947357968:web:3c2020aceb14fb08c1ff95",
+        measurementId: "G-KHNRPP27PX"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 將查詢功能綁定到全域變數，讓 HTML 的 onclick 可以呼叫
+    window.searchLogs = async async function(showAll = false) {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('resultTableBody').innerHTML = '';
+        
+        const jobNo = document.getElementById('jobInput').value.trim().toUpperCase();
+        const logsRef = collection(db, "audit_logs");
+        let q;
+
+        try {
+            // 建立查詢條件
+            if (showAll || (!jobNo && !document.getElementById('startDate').value)) {
+                // 預設抓取最近 50 筆
+                q = query(logsRef, orderBy("timestamp", "desc"), limit(50));
+            } else if (jobNo) {
+                // 如果有工令，精準比對工令並按時間排序
+                q = query(logsRef, where("job_no", "==", jobNo), orderBy("timestamp", "desc"));
+            } else {
+                // TODO: 若需要純日期區間查詢，需在 Firebase 建立複合索引 (Composite Index)
+                alert("目前示範程式以工令查詢為主，純日期區間需至後台建立索引。");
+                document.getElementById('loading').style.display = 'none';
+                return;
+            }
+
+            const querySnapshot = await getDocs(q);
+            let html = '';
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                // 轉換 Firebase Timestamp 為本地時間
+                const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
+                const dateStr = dateObj.toLocaleString('zh-TW', { hour12: false });
+                
+                const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
+                const issues = data.issues || [];
+                
+                // 組合內部明細的 HTML
+                let detailsHtml = '';
+                if (issues.length === 0) {
+                    detailsHtml = '<p>✅ 系統判定全數合格，無異常紀錄。</p>';
+                } else {
+                    issues.forEach(issue => {
+                        let failureTable = issue.failures ? issue.failures.map(f => `<li><b>${f.id}:</b> ${f.val} (判定: ${f.calc || f.target})</li>`).join('') : '';
+                        detailsHtml += `
+                            <div class="issue-card">
+                                <strong>${issue.issue_type} - ${issue.item} (P.${issue.page})</strong>
+                                <p style="margin: 5px 0; color: #555;">${issue.common_reason}</p>
+                                <ul style="margin: 5px 0; font-size: 0.9em;">${failureTable}</ul>
+                            </div>
+                        `;
+                    });
+                }
+
+                // 產生主列 (Main Row) 與 隱藏的明細列 (Details Row)
+                html += `
+                    <tr class="main-row" onclick="toggleDetails('${doc.id}')">
+                        <td>${dateStr}</td>
+                        <td><strong>${data.job_no}</strong></td>
+                        <td>${data.filename}</td>
+                        <td class="${statusClass}">${data.status}</td>
+                    </tr>
+                    <tr id="details-${doc.id}" class="details-row">
+                        <td colspan="4">
+                            <div class="details-content">
+                                <h4>📋 稽核異常明細</h4>
+                                ${detailsHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if(html === '') {
+                html = '<tr><td colspan="4" style="text-align:center;">查無資料</td></tr>';
+            }
+
+            document.getElementById('resultTableBody').innerHTML = html;
+            
+        } catch (error) {
+            console.error("查詢失敗:", error);
+            alert("查詢失敗，請檢查主控台錯誤訊息。");
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    // 展開/收合明細的控制邏輯
+    window.toggleDetails = function(docId) {
+        const row = document.getElementById(`details-${docId}`);
+        if (row.style.display === 'table-row') {
+            row.style.display = 'none';
+        } else {
+            row.style.display = 'table-row';
+        }
+    }
+    
+    // 網頁載入時自動拉取最新資料
+    window.onload = () => window.searchLogs(true);
+</script>
+</body>
+</html>
