@@ -132,22 +132,16 @@
         /* 📐 欄位寬度與對齊微調 (精準控制間距) */
         th.date-col, td.date-col { 
             width: 1%; white-space: nowrap; text-align: center; 
-            padding-left: 10px; padding-right: 15px; /* 微調：拉大右邊距，與工令號碼保持適當距離 */
+            padding-left: 20px; /* 微調：增加左側留白，避免貼壁 */
+            padding-right: 15px;
         }
         th.job-col, td.job-col { 
             width: 1%; white-space: nowrap; 
-            padding-left: 15px; padding-right: 25px; /* 微調：左邊距退一點點，與日期拉開 */
+            padding-left: 15px; padding-right: 25px; 
         }
         th.status-col, td.status-col { 
-            width: 1%; white-space: nowrap; 
+            width: auto; /* 讓狀態欄位吃下剩餘空間 */
             padding-left: 10px; padding-right: 25px; 
-        }
-        th.filename-col { 
-            padding-left: 10px; padding-right: 15px; white-space: nowrap; 
-        }
-        td.filename-col { 
-            padding-left: 10px; padding-right: 15px;
-            max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; white-space: nowrap; 
         }
         .time-text { color: #777; font-size: 0.9em; }
 
@@ -258,7 +252,6 @@
                     <th class="date-col">日期</th>
                     <th class="job-col">工令號碼</th>
                     <th class="status-col">稽核結果</th>
-                    <th class="filename-col">檔案名稱</th>
                 </tr>
             </thead>
             <tbody id="resultTableBody">
@@ -392,10 +385,9 @@
                         <td class="date-col">${shortDateStr}<br><span class="time-text">${timeStr}</span></td>
                         <td class="job-col"><strong>${data.job_no}</strong></td>
                         <td class="status-col ${statusClass}">${data.status}</td>
-                        <td class="filename-col" title="${data.filename}">${data.filename}</td>
                     </tr>
                     <tr id="details-${docId}" class="details-row">
-                        <td colspan="4" style="padding: 0; border: none;">
+                        <td colspan="3" style="padding: 0; border: none;">
                             <div class="details-content">
                                 ${detailsHtml}
                             </div>
@@ -405,7 +397,7 @@
             });
 
             if(html === '') {
-                html = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
+                html = '<tr><td colspan="3" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
             }
 
             document.getElementById('resultTableBody').innerHTML = html;
@@ -414,7 +406,7 @@
             console.error("查詢失敗:", error);
             if (error.message.includes('index') || error.message.includes('Index')) {
                 const urlMatch = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-                let errorHtml = `<tr><td colspan="4" style="text-align:center; padding: 40px 20px;">`;
+                let errorHtml = `<tr><td colspan="3" style="text-align:center; padding: 40px 20px;">`;
                 errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0; font-size: 16px;">⚠️ 系統需要建立交叉查詢索引</h3>`;
                 errorHtml += `<p style="color: #555; font-size: 14px;">因為您剛剛使用了「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
                 if (urlMatch) {
@@ -424,7 +416,7 @@
                 document.getElementById('resultTableBody').innerHTML = errorHtml;
             } else {
                 alert("查詢發生錯誤，請檢查網路連線或重新整理。");
-                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查詢失敗</td></tr>';
+                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px; font-size: 14px;">查詢失敗</td></tr>';
             }
         } finally {
             document.getElementById('loading').style.display = 'none';
