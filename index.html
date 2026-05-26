@@ -322,11 +322,30 @@
             
         } catch (error) {
             console.error("查詢失敗:", error);
-            // 💡 防呆機制：如果同時用「工令」+「日期區間」去查，Firebase 會要求建立複合索引
-            if (error.message.includes('index')) {
-                alert("⚠️ 系統提示：因為您同時使用了「工令」與「日期」查詢，Firebase 需要建立資料庫索引。\n\n請開啟 F12 (或手機版右下角齒輪)，點擊錯誤訊息裡面的 Firebase 連結來自動建立索引 (約需等待 3 分鐘)。");
+            
+            // 💡 智慧防呆：自動捕捉 Firebase 建立索引的網址，並顯示在畫面上
+            if (error.message.includes('index') || error.message.includes('Index')) {
+                // 利用正規表達式把 URL 抓出來
+                const urlMatch = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
+                
+                let errorHtml = `<tr><td colspan="4" style="text-align:center; padding: 40px 20px;">`;
+                errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0;">⚠️ 系統需要建立交叉查詢索引</h3>`;
+                errorHtml += `<p style="color: #555;">因為您同時使用了「工令號碼」與「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
+                
+                if (urlMatch) {
+                    const indexUrl = urlMatch[0];
+                    errorHtml += `<a href="${indexUrl}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">👉 點我前往 Firebase 自動建立索引</a>`;
+                    errorHtml += `<p style="font-size: 0.85em; color: #888; margin-top: 15px;">點擊後會開啟 Firebase 後台，請直接點選彈出視窗的<b>「建立 (Create)」</b>。<br>建立過程大約需要 3~5 分鐘，完成後回到此頁面即可正常查詢！</p>`;
+                } else {
+                    errorHtml += `<p style="color: red;">無法自動取得網址，請使用電腦版 Chrome 按 F12 查看 Console 內的連結。</p>`;
+                }
+                
+                errorHtml += `</td></tr>`;
+                document.getElementById('resultTableBody').innerHTML = errorHtml;
+                
             } else {
-                alert("查詢失敗，請檢查主控台錯誤訊息。");
+                alert("查詢發生未知錯誤，請檢查主控台。");
+                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查詢失敗</td></tr>';
             }
         } finally {
             document.getElementById('loading').style.display = 'none';
