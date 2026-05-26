@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>工令稽核查詢系統</title>
@@ -26,13 +22,13 @@
         }
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
         
-        /* 🔍 搜尋區塊排版 (群組化設計) */
+        /* 🔍 搜尋區塊排版 */
         .search-box { 
             display: flex; 
             gap: 15px; 
             margin-bottom: 20px; 
             flex-wrap: wrap; 
-            align-items: flex-end; /* 讓按鈕跟輸入框底部對齊 */
+            align-items: flex-end;
         }
         .input-group {
             display: flex;
@@ -46,7 +42,11 @@
             color: #666;
             font-weight: bold;
         }
-        input, select, button { 
+        .date-input-wrapper {
+            display: flex;
+            gap: 5px;
+        }
+        input[type="text"], select, button { 
             padding: 10px 12px; 
             font-size: 15px; 
             border: 1px solid #ccc; 
@@ -54,6 +54,16 @@
             box-sizing: border-box;
             width: 100%;
         }
+        /* 隱藏原生日期框的輸入區，只露出日曆按鈕 */
+        input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            width: 42px;
+            cursor: pointer;
+        }
+        
         input:focus, select:focus {
             outline: none;
             border-color: #ff4b4b;
@@ -78,7 +88,7 @@
         button.secondary { background-color: #6c757d; }
         button.secondary:hover { background-color: #5a6268; }
 
-        /* 📊 表格外層包裝 (手機版左右滑動) */
+        /* 📊 表格外層包裝 */
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -100,7 +110,9 @@
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
-        td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* 檔案名稱長度限制 (現在移到最後一欄) */
+        td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
         .details-row { display: none; }
@@ -141,17 +153,23 @@
     <div class="search-box">
         <div class="input-group">
             <label>🔍 工令號碼</label>
-            <input type="text" id="jobInput" placeholder="輸入工令 (選填)...">
+            <input type="text" id="jobInput" placeholder="輸入部分號碼即可 (如 707)">
         </div>
         
         <div class="input-group">
             <label>📅 開始日期</label>
-            <input type="text" id="startDate" placeholder="例: 115.05.26">
+            <div class="date-input-wrapper">
+                <input type="text" id="startDate" placeholder="115.05.26">
+                <input type="date" onchange="pickDate('startDate', this.value); this.value='';">
+            </div>
         </div>
         
         <div class="input-group">
             <label>📅 結束日期</label>
-            <input type="text" id="endDate" placeholder="例: 115.05.26">
+            <div class="date-input-wrapper">
+                <input type="text" id="endDate" placeholder="115.05.26">
+                <input type="date" onchange="pickDate('endDate', this.value); this.value='';">
+            </div>
         </div>
 
         <div class="input-group">
@@ -183,10 +201,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>日期時間</th>
+                    <th>日期</th>
                     <th>工令號碼</th>
-                    <th>檔案名稱</th>
                     <th>稽核結果</th>
+                    <th>檔案名稱</th>
                 </tr>
             </thead>
             <tbody id="resultTableBody">
@@ -199,6 +217,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // ⚠️⚠️ 請替換為您的 Firebase Web 應用程式設定 ⚠️⚠️
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
         authDomain: "vendor-audit-api.firebaseapp.com",
@@ -212,14 +231,22 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 民國年字串轉為 JavaScript Date 物件 (支援 115.05.26 或 115/05/26)
+    // 處理日曆選單回傳的西元日期 (YYYY-MM-DD)，轉成民國年放入文字框
+    window.pickDate = function(targetId, dateVal) {
+        if (!dateVal) return;
+        const parts = dateVal.split("-");
+        const rocYear = parseInt(parts[0]) - 1911;
+        document.getElementById(targetId).value = `${rocYear}.${parts[1]}.${parts[2]}`;
+    }
+
+    // 文字框的民國年字串，轉成 JS Date 物件供資料庫查詢
     function parseROCDate(dateStr, isEndOfDay = false) {
         if (!dateStr) return null;
         const cleanStr = dateStr.replace(/\./g, '/').replace(/-/g, '/').trim();
         const parts = cleanStr.split('/');
         if (parts.length >= 3) {
-            const year = parseInt(parts[0]) + 1911; // 轉西元年
-            const month = parseInt(parts[1]) - 1;   // JS 月份從 0 開始
+            const year = parseInt(parts[0]) + 1911; 
+            const month = parseInt(parts[1]) - 1;   
             const day = parseInt(parts[2]);
             const dateObj = new Date(year, month, day);
             if (isEndOfDay) {
@@ -246,10 +273,8 @@
         let queryConstraints = [];
 
         try {
-            // 處理「顯示全部」或「正常查詢」
             if (!showAll) {
-                if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
-                
+                // ⚠️ 移除了 Firestore 原生的 where("job_no", "==") 條件，改由前端模糊過濾
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
                 
@@ -257,33 +282,58 @@
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
             }
 
-            // 加入排序與筆數限制
+            // 為了支援前端模糊搜尋，如果使用者輸入了工令，我們從資料庫多抓一點近期資料來過濾
+            let fetchLimit = jobNo && !showAll ? 300 : limitVal;
+            
             queryConstraints.push(orderBy("timestamp", sortOrder));
-            queryConstraints.push(limit(limitVal));
+            queryConstraints.push(limit(fetchLimit));
 
-            // 組裝查詢
             const q = query(logsRef, ...queryConstraints);
             const querySnapshot = await getDocs(q);
-            let html = '';
-
+            
+            // 將結果轉為陣列，並在這裡進行「模糊比對 (includes)」
+            let filteredResults = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                // SQL LIKE 效果：只要字串包含輸入的內容，就允許通過
+                if (jobNo && !showAll && !data.job_no.includes(jobNo)) {
+                    return; 
+                }
+                filteredResults.push({ id: doc.id, data: data });
+            });
+
+            // 裁切至使用者選擇的顯示筆數 (例如只顯示前 50 筆)
+            filteredResults = filteredResults.slice(0, limitVal);
+
+            let html = '';
+
+            filteredResults.forEach((docObj) => {
+                const data = docObj.data;
+                const docId = docObj.id;
                 const dateObj = data.timestamp ? data.timestamp.toDate() : new Date();
                 
-                // 將時間轉回民國年格式 (YYY.MM.DD HH:mm)
                 const rocYear = dateObj.getFullYear() - 1911;
                 const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
                 const dd = String(dateObj.getDate()).padStart(2, '0');
-                const hh = String(dateObj.getHours()).padStart(2, '0');
+                const hh = String(dateObj.getHours()).padStart(2, '0'); // 24小時制
                 const min = String(dateObj.getMinutes()).padStart(2, '0');
-                const dateStr = `${rocYear}.${mm}.${dd} ${hh}:${min}`;
+                
+                // 表格上只顯示日期，節省空間
+                const shortDateStr = `${rocYear}.${mm}.${dd}`;
+                // 明細裡顯示完整時間
+                const fullDateTimeStr = `${rocYear}.${mm}.${dd} ${hh}:${min}`;
                 
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
                 
                 let detailsHtml = '';
+                // 將精確時間放入展開的明細卡片最上方
+                detailsHtml += `<div style="color: #666; font-size: 0.9em; margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px;">
+                                   🕒 精確稽核時間：${fullDateTimeStr}
+                                </div>`;
+
                 if (issues.length === 0) {
-                    detailsHtml = '<p>✅ 系統判定全數合格，無異常紀錄。</p>';
+                    detailsHtml += '<p>✅ 系統判定全數合格，無異常紀錄。</p>';
                 } else {
                     issues.forEach(issue => {
                         let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:4px;"><b>${f.id}:</b> ${f.val} <br><span style="color:#666; font-size:0.9em;">(基準: ${f.calc || f.target})</span></li>`).join('') : '';
@@ -297,14 +347,15 @@
                     });
                 }
 
+                // 調整順序：日期 -> 工令 -> 狀態 -> 檔名
                 html += `
-                    <tr class="main-row" onclick="toggleDetails('${doc.id}')">
-                        <td>${dateStr}</td>
+                    <tr class="main-row" onclick="toggleDetails('${docId}')">
+                        <td>${shortDateStr}</td>
                         <td><strong>${data.job_no}</strong></td>
-                        <td class="filename-col" title="${data.filename}">${data.filename}</td>
                         <td class="${statusClass}">${data.status}</td>
+                        <td class="filename-col" title="${data.filename}">${data.filename}</td>
                     </tr>
-                    <tr id="details-${doc.id}" class="details-row">
+                    <tr id="details-${docId}" class="details-row">
                         <td colspan="4" style="padding: 0; border: none;">
                             <div class="details-content">
                                 ${detailsHtml}
@@ -315,36 +366,25 @@
             });
 
             if(html === '') {
-                html = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查無資料</td></tr>';
+                html = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查無相符資料</td></tr>';
             }
 
             document.getElementById('resultTableBody').innerHTML = html;
             
         } catch (error) {
             console.error("查詢失敗:", error);
-            
-            // 💡 智慧防呆：自動捕捉 Firebase 建立索引的網址，並顯示在畫面上
             if (error.message.includes('index') || error.message.includes('Index')) {
-                // 利用正規表達式把 URL 抓出來
                 const urlMatch = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-                
                 let errorHtml = `<tr><td colspan="4" style="text-align:center; padding: 40px 20px;">`;
                 errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0;">⚠️ 系統需要建立交叉查詢索引</h3>`;
-                errorHtml += `<p style="color: #555;">因為您同時使用了「工令號碼」與「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
-                
+                errorHtml += `<p style="color: #555;">因為您剛剛使用了「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
                 if (urlMatch) {
-                    const indexUrl = urlMatch[0];
-                    errorHtml += `<a href="${indexUrl}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">👉 點我前往 Firebase 自動建立索引</a>`;
-                    errorHtml += `<p style="font-size: 0.85em; color: #888; margin-top: 15px;">點擊後會開啟 Firebase 後台，請直接點選彈出視窗的<b>「建立 (Create)」</b>。<br>建立過程大約需要 3~5 分鐘，完成後回到此頁面即可正常查詢！</p>`;
-                } else {
-                    errorHtml += `<p style="color: red;">無法自動取得網址，請使用電腦版 Chrome 按 F12 查看 Console 內的連結。</p>`;
+                    errorHtml += `<a href="${urlMatch[0]}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">👉 點我前往 Firebase 自動建立索引</a>`;
                 }
-                
                 errorHtml += `</td></tr>`;
                 document.getElementById('resultTableBody').innerHTML = errorHtml;
-                
             } else {
-                alert("查詢發生未知錯誤，請檢查主控台。");
+                alert("查詢發生錯誤，請檢查網路連線或重新整理。");
                 document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查詢失敗</td></tr>';
             }
         } finally {
