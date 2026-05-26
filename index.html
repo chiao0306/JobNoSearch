@@ -22,11 +22,11 @@
         }
         h2 { margin-top: 0; color: #333; font-size: 1.5rem; }
         
-        /* 🔍 搜尋區塊排版 */
+        /* 🔍 主要搜尋區塊排版 (永遠顯示) */
         .search-box { 
             display: flex; 
             gap: 15px; 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
             flex-wrap: wrap; 
             align-items: flex-end;
         }
@@ -34,17 +34,13 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            flex: 1;
+            flex: 2;
             min-width: 140px;
         }
         .input-group label {
             font-size: 0.85rem;
             color: #666;
             font-weight: bold;
-        }
-        .date-input-wrapper {
-            display: flex;
-            gap: 8px;
         }
         input[type="text"], select, button { 
             padding: 10px 12px; 
@@ -60,38 +56,6 @@
             box-shadow: 0 0 0 2px rgba(255,75,75,0.2);
         }
 
-        /* 📅 優化版日曆按鈕 (將原生 input 隱藏在美觀的按鈕上方) */
-        .calendar-btn-container {
-            position: relative;
-            width: 48px;
-            flex-shrink: 0;
-        }
-        .calendar-icon-btn {
-            width: 100%;
-            height: 100%;
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            color: #333;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin: 0; /* 消除某些瀏覽器的預設 margin */
-        }
-        .hidden-date-picker {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0; /* 完全透明，但保留點擊功能 */
-            cursor: pointer;
-            z-index: 10;
-        }
-        
         .btn-group {
             display: flex;
             gap: 10px;
@@ -110,6 +74,45 @@
         button.secondary { background-color: #6c757d; }
         button.secondary:hover { background-color: #5a6268; }
 
+        /* 📁 摺疊進階搜尋區塊 */
+        details.advanced-filter {
+            margin-bottom: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+        details.advanced-filter summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+            outline: none;
+            user-select: none;
+            font-size: 14px;
+        }
+        .filter-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: flex-end;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+
+        /* 📅 優化版日曆按鈕 */
+        .date-input-wrapper { display: flex; gap: 8px; width: 100%; }
+        .calendar-btn-container { position: relative; width: 44px; flex-shrink: 0; }
+        .calendar-icon-btn {
+            width: 100%; height: 100%; background-color: #f8f9fa; border: 1px solid #ccc;
+            border-radius: 6px; font-size: 1.2rem; display: flex; align-items: center;
+            justify-content: center; padding: 0; color: #333; margin: 0;
+        }
+        .hidden-date-picker {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 10;
+        }
+
         /* 📊 表格外層包裝 */
         .table-wrapper {
             width: 100%;
@@ -118,31 +121,20 @@
             border-radius: 8px;
             border: 1px solid #eee;
         }
-        table { 
-            width: 100%; 
-            min-width: 650px; 
-            border-collapse: collapse; 
-        }
-        th, td { 
-            border-bottom: 1px solid #eee; 
-            padding: 12px 15px; 
-            text-align: left; 
-            white-space: nowrap; 
-        }
+        table { width: 100%; min-width: 650px; border-collapse: collapse; }
+        
+        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; white-space: nowrap; font-size: 14px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
-        
-        /* 檔案名稱長度限制 */
         td.filename-col { max-width: 150px; overflow: hidden; text-overflow: ellipsis; color: #666; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
         .details-row { display: none; }
         .details-content { 
-            padding: 15px; 
+            padding: 12px; 
             background-color: #fafafc; 
-            border-radius: 8px;
-            margin: 10px;
+            margin: 0;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
             white-space: normal;
         }
@@ -152,16 +144,17 @@
         .issue-card { 
             background: white; 
             border-left: 4px solid #dc3545; 
-            padding: 12px; 
-            margin-bottom: 12px; 
+            padding: 8px 12px; 
+            margin-bottom: 8px; 
             border-radius: 4px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         /* 📱 手機版專屬樣式 */
         @media (max-width: 600px) {
-            .search-box { flex-direction: column; gap: 12px; align-items: stretch; }
-            .btn-group { flex-direction: column; }
+            .search-box { flex-direction: column; gap: 10px; align-items: stretch; }
+            .btn-group { flex-direction: row; }
+            .filter-content { flex-direction: column; align-items: stretch; gap: 10px; }
             .container { padding: 15px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
         }
@@ -175,53 +168,57 @@
     <div class="search-box">
         <div class="input-group">
             <label>🔍 工令號碼</label>
-            <input type="text" id="jobInput" placeholder="輸入完整工令單號">
+            <input type="text" id="jobInput" placeholder="輸入完整工令 (按 Enter 搜尋)">
         </div>
-        
-        <div class="input-group">
-            <label>📅 開始日期</label>
-            <div class="date-input-wrapper">
-                <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
-                <div class="calendar-btn-container">
-                    <button type="button" class="calendar-icon-btn">📅</button>
-                    <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
-                </div>
-            </div>
-        </div>
-        
-        <div class="input-group">
-            <label>📅 結束日期</label>
-            <div class="date-input-wrapper">
-                <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
-                <div class="calendar-btn-container">
-                    <button type="button" class="calendar-icon-btn">📅</button>
-                    <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
-                </div>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>📋 顯示筆數</label>
-            <select id="limitSelect">
-                <option value="20">20 筆</option>
-                <option value="50" selected>50 筆</option>
-                <option value="100">100 筆</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>↕️ 排序方式</label>
-            <select id="sortSelect">
-                <option value="desc">時間新 ➔ 舊</option>
-                <option value="asc">時間舊 ➔ 新</option>
-            </select>
-        </div>
-
         <div class="btn-group">
             <button onclick="searchLogs()">🔍 查詢</button>
             <button class="secondary" onclick="searchLogs(true)">顯示全部</button>
         </div>
     </div>
+
+    <details class="advanced-filter">
+        <summary>▶ 展開進階篩選 (日期、筆數、排序)</summary>
+        <div class="filter-content">
+            <div class="input-group">
+                <label>📅 開始日期</label>
+                <div class="date-input-wrapper">
+                    <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
+                    <div class="calendar-btn-container">
+                        <button type="button" class="calendar-icon-btn">📅</button>
+                        <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>📅 結束日期</label>
+                <div class="date-input-wrapper">
+                    <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
+                    <div class="calendar-btn-container">
+                        <button type="button" class="calendar-icon-btn">📅</button>
+                        <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group" style="flex: 0.5;">
+                <label>📋 筆數</label>
+                <select id="limitSelect">
+                    <option value="20">20 筆</option>
+                    <option value="50" selected>50 筆</option>
+                    <option value="100">100 筆</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="flex: 1;">
+                <label>↕️ 排序方式</label>
+                <select id="sortSelect">
+                    <option value="desc">時間新 ➔ 舊</option>
+                    <option value="asc">時間舊 ➔ 新</option>
+                </select>
+            </div>
+        </div>
+    </details>
 
     <div id="loading" style="display: none; text-align: center; padding: 20px; color: #666;">🔄 資料載入中...</div>
 
@@ -236,7 +233,7 @@
                 </tr>
             </thead>
             <tbody id="resultTableBody">
-                </tbody>
+            </tbody>
         </table>
     </div>
 </div>
@@ -245,6 +242,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // ⚠️ 您的 Firebase 設定
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
         authDomain: "vendor-audit-api.firebaseapp.com",
@@ -258,7 +256,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 日曆選單回傳處理：轉成 7 碼民國年 (例：1150526)
+    // 🔥 監聽工令輸入框的 Enter 鍵事件
+    document.getElementById("jobInput").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); 
+            window.searchLogs();    
+            this.blur();            
+        }
+    });
+
     window.pickDate = function(targetId, dateVal) {
         if (!dateVal) return;
         const parts = dateVal.split("-");
@@ -266,10 +272,8 @@
         document.getElementById(targetId).value = `${rocYear}${parts[1]}${parts[2]}`;
     }
 
-    // 將 7 碼純數字民國年 (1150526) 轉成 JS Date 物件
     function parseROCDate(dateStr, isEndOfDay = false) {
         if (!dateStr) return null;
-        // 聰明防呆：濾掉所有非數字字元 (不小心打點或斜線也會自動修正)
         const cleanStr = dateStr.replace(/\D/g, '').trim();
         
         if (cleanStr.length === 7) {
@@ -302,13 +306,11 @@
 
         try {
             if (!showAll) {
-                // 原生 Firebase 精準搜尋 (最快、最省額度)
                 if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
                 
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
                 
-                // 防呆提醒
                 if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
                 if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
                 
@@ -335,28 +337,26 @@
                 const hh = String(dateObj.getHours()).padStart(2, '0');
                 const min = String(dateObj.getMinutes()).padStart(2, '0');
                 
-                // 表格列表顯示 7 碼純數字
                 const shortDateStr = `${rocYear}${mm}${dd}`;
-                // 明細裡顯示完整時間
                 const fullDateTimeStr = `${rocYear}${mm}${dd} ${hh}:${min}`;
                 
                 const statusClass = data.status.includes('合格') ? 'status-pass' : 'status-fail';
                 const issues = data.issues || [];
                 
-                let detailsHtml = `<div style="color: #666; font-size: 0.9em; margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px;">
+                let detailsHtml = `<div style="color: #666; font-size: 14px; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 6px;">
                                    🕒 精確稽核時間：${fullDateTimeStr}
                                 </div>`;
 
                 if (issues.length === 0) {
-                    detailsHtml += '<p>✅ 系統判定全數合格，無異常紀錄。</p>';
+                    detailsHtml += '<p style="font-size: 14px; margin: 4px 0;">✅ 系統判定全數合格，無異常紀錄。</p>';
                 } else {
                     issues.forEach(issue => {
-                        let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:4px;"><b>${f.id}:</b> ${f.val} <br><span style="color:#666; font-size:0.9em;">(基準: ${f.calc || f.target})</span></li>`).join('') : '';
+                        let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:2px;"><b>${f.id}:</b> ${f.val} <br><span style="color:#666; font-size:13px;">(基準: ${f.calc || f.target})</span></li>`).join('') : '';
                         detailsHtml += `
                             <div class="issue-card">
-                                <strong>${issue.issue_type} - ${issue.item} <span style="color:#666; font-weight:normal;">(P.${issue.page})</span></strong>
-                                <p style="margin: 8px 0; color: #444; font-size:0.95em;">${issue.common_reason}</p>
-                                <ul style="margin: 5px 0; padding-left: 20px; font-size: 0.9em;">${failureTable}</ul>
+                                <strong style="font-size: 14px;">${issue.issue_type} - ${issue.item} <span style="color:#666; font-weight:normal;">(P.${issue.page})</span></strong>
+                                <p style="margin: 6px 0; color: #444; font-size: 14px;">${issue.common_reason}</p>
+                                <ul style="margin: 4px 0; padding-left: 20px; font-size: 14px;">${failureTable}</ul>
                             </div>
                         `;
                     });
@@ -380,7 +380,7 @@
             });
 
             if(html === '') {
-                html = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查無相符資料</td></tr>';
+                html = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
             }
 
             document.getElementById('resultTableBody').innerHTML = html;
@@ -390,16 +390,16 @@
             if (error.message.includes('index') || error.message.includes('Index')) {
                 const urlMatch = error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
                 let errorHtml = `<tr><td colspan="4" style="text-align:center; padding: 40px 20px;">`;
-                errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0;">⚠️ 系統需要建立交叉查詢索引</h3>`;
-                errorHtml += `<p style="color: #555;">因為您剛剛使用了「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
+                errorHtml += `<h3 style="color: #ff4b4b; margin-top: 0; font-size: 16px;">⚠️ 系統需要建立交叉查詢索引</h3>`;
+                errorHtml += `<p style="color: #555; font-size: 14px;">因為您剛剛使用了「日期」進行搜尋，Firebase 為了加快搜尋速度，要求先建立一次專屬索引。</p>`;
                 if (urlMatch) {
-                    errorHtml += `<a href="${urlMatch[0]}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">👉 點我前往 Firebase 自動建立索引</a>`;
+                    errorHtml += `<a href="${urlMatch[0]}" target="_blank" style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 14px;">👉 點我前往 Firebase 自動建立索引</a>`;
                 }
                 errorHtml += `</td></tr>`;
                 document.getElementById('resultTableBody').innerHTML = errorHtml;
             } else {
                 alert("查詢發生錯誤，請檢查網路連線或重新整理。");
-                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">查詢失敗</td></tr>';
+                document.getElementById('resultTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; font-size: 14px;">查詢失敗</td></tr>';
             }
         } finally {
             document.getElementById('loading').style.display = 'none';
