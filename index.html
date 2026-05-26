@@ -132,15 +132,15 @@
         /* 📐 欄位寬度與對齊微調 (精準控制間距) */
         th.date-col, td.date-col { 
             width: 1%; white-space: nowrap; text-align: center; 
-            padding-left: 15px; padding-right: 5px; /* 右側縮減，讓工令靠過來 */
+            padding-left: 10px; padding-right: 15px; /* 微調：拉大右邊距，與工令號碼保持適當距離 */
         }
         th.job-col, td.job-col { 
             width: 1%; white-space: nowrap; 
-            padding-left: 10px; padding-right: 25px; /* 右側拉開，遠離狀態欄位 */
+            padding-left: 15px; padding-right: 25px; /* 微調：左邊距退一點點，與日期拉開 */
         }
         th.status-col, td.status-col { 
             width: 1%; white-space: nowrap; 
-            padding-left: 10px; padding-right: 25px; /* 右側拉開，維持與前一欄相同的間距 */
+            padding-left: 10px; padding-right: 25px; 
         }
         th.filename-col { 
             padding-left: 10px; padding-right: 15px; white-space: nowrap; 
