@@ -139,7 +139,7 @@
         /* 💡 修正點：移除了 min-width: 650px，解決手機版多餘的橫向滑動空間 */
         table { width: 100%; border-collapse: collapse; } 
         
-        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 14px; }
+        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 16px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
@@ -153,6 +153,7 @@
         th.job-col, td.job-col { 
             width: 1%; white-space: nowrap; 
             padding-left: 15px; padding-right: 25px; 
+            font-size: 18px; /* 👈 新增這一行來單獨放大工令號碼 */
         }
         th.status-col, td.status-col { 
             width: auto; 
@@ -182,9 +183,10 @@
         }
         
         .issue-card, .issue-card strong, .issue-desc, .issue-list, .issue-list li {
-            font-size: 14px; 
+            font-size: 16px; /* 👈 這裡把 14px 數字改大即可 */
             line-height: 1.5;
         }
+
         .issue-desc { margin: 6px 0; color: #444; }
         .issue-list { margin: 4px 0; padding-left: 20px; }
 
