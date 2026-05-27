@@ -264,7 +264,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, or, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
@@ -328,7 +328,15 @@
 
         try {
             if (!showAll) {
-                if (jobNo) queryConstraints.push(where("job_no", "==", jobNo));
+                // 👇 將原本單一的 where 改為 or 條件
+                if (jobNo) {
+                    queryConstraints.push(
+                        or(
+                            where("job_no", "==", jobNo),
+                            where("job_no_last_5", "==", jobNo)
+                        )
+                    );
+                }
                 
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
