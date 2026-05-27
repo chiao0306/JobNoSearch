@@ -150,11 +150,16 @@
             padding-left: 20px; 
             padding-right: 15px;
         }
+        
         th.job-col, td.job-col { 
-            width: 1%; white-space: nowrap; 
-            padding-left: 15px; padding-right: 25px; 
+            width: 1%; 
+            white-space: nowrap; 
+            text-align: center; /* 👈 新增：強制文字置中 */
+            padding-left: 10px; /* 👈 修改：讓左右留白對稱 */
+            padding-right: 10px; 
             font-size: 14px; /* 👈 新增這一行來單獨放大工令號碼 */
         }
+        
         th.status-col, td.status-col { 
             width: auto; 
             padding-left: 10px; padding-right: 25px; 
