@@ -110,14 +110,8 @@
             justify-content: center; padding: 0; color: #333; margin: 0;
         }
         .hidden-date-picker {
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            width: 1px; 
-            height: 1px;
-            opacity: 0; 
-            pointer-events: none; /* 關鍵：讓它完全不要干擾滑鼠點擊 */
-            z-index: -1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 10;
         }
 
         /* 📊 表格外層包裝 */
@@ -213,9 +207,9 @@
             <div class="input-group">
                 <label>📅 開始日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="startDate" placeholder="例: YYYMMDD" maxlength="9">
+                    <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
                     <div class="calendar-btn-container">
-                        <button type="button" class="calendar-icon-btn" onclick="this.nextElementSibling.showPicker()">📅</button>
+                        <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
                     </div>
                 </div>
@@ -224,9 +218,9 @@
             <div class="input-group">
                 <label>📅 結束日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="endDate" placeholder="例: YYYMMDD" maxlength="9">
+                    <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
                     <div class="calendar-btn-container">
-                        <button type="button" class="calendar-icon-btn" onclick="this.nextElementSibling.showPicker()">📅</button>
+                        <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
                     </div>
                 </div>
@@ -347,8 +341,8 @@
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
                 
-                if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: YYYMMDD)");
-                if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: YYYMMDD)");
+                if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
+                if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
                 
                 if (startDate) queryConstraints.push(where("timestamp", ">=", startDate));
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
