@@ -109,9 +109,22 @@
             border-radius: 6px; font-size: 1.2rem; display: flex; align-items: center;
             justify-content: center; padding: 0; color: #333; margin: 0;
         }
+        /* 把透明 input 蓋回按鈕上方 (恢復原狀) */
         .hidden-date-picker {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; cursor: pointer; z-index: 10;
+        }
+
+        /* 🚀 魔法在這裡：把電腦版原生隱藏的小圖示，強制拉大到 100% 填滿整個按鈕 */
+        .hidden-date-picker::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
         }
 
         /* 📊 表格外層包裝 */
