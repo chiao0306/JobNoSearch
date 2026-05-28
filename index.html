@@ -168,8 +168,12 @@
         
         th.status-col, td.status-col { 
             width: auto; 
-            padding-left: 10px; padding-right: 25px; 
+            padding-left: 10px; 
+            padding-right: 25px; 
+            white-space: nowrap;  /* 👈 新增：強制文字不斷行 */
+            min-width: 120px;     /* 👈 新增：給予基本寬度，確保「🔴 異常 (100 項)」放得下 */
         }
+
         .time-text { color: #777; font-size: 0.9em; }
 
         /* 📋 明細區塊設計 */
@@ -233,7 +237,7 @@
             <div class="input-group">
                 <label>📅 開始日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="startDate" placeholder="例: 1150526" maxlength="9">
+                    <input type="text" id="startDate" placeholder="例: YYYMMDD" maxlength="9">
                     <div class="calendar-btn-container">
                         <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('startDate', this.value); this.value='';">
@@ -244,7 +248,7 @@
             <div class="input-group">
                 <label>📅 結束日期</label>
                 <div class="date-input-wrapper">
-                    <input type="text" id="endDate" placeholder="例: 1150526" maxlength="9">
+                    <input type="text" id="endDate" placeholder="例: YYYMMDD" maxlength="9">
                     <div class="calendar-btn-container">
                         <button type="button" class="calendar-icon-btn">📅</button>
                         <input type="date" class="hidden-date-picker" onchange="pickDate('endDate', this.value); this.value='';">
@@ -371,8 +375,8 @@
                 const startDate = parseROCDate(startStr);
                 const endDate = parseROCDate(endStr, true);
                 
-                if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
-                if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: 1150526)");
+                if (startStr && !startDate) alert("「開始日期」格式錯誤，請輸入 7 碼數字 (例: YYYMMDD)");
+                if (endStr && !endDate) alert("「結束日期」格式錯誤，請輸入 7 碼數字 (例: YYYMMDD)");
                 
                 if (startDate) queryConstraints.push(where("timestamp", ">=", startDate));
                 if (endDate) queryConstraints.push(where("timestamp", "<=", endDate));
