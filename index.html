@@ -271,6 +271,8 @@
         </div>
     </details>
 
+    <div id="searchSummary" style="display: none; font-size: 14px; color: #666; margin-bottom: 15px; padding-left: 5px; font-weight: bold;">
+        </div>
     <div id="loading" style="display: none; text-align: center; padding: 20px; color: #666;">🔄 資料載入中...</div>
 
     <div class="table-wrapper">
@@ -343,6 +345,8 @@
         document.getElementById('loading').style.display = 'block';
         document.getElementById('resultTableBody').innerHTML = '';
         
+        document.getElementById("searchSummary").style.display = "none";
+        
         const jobNo = document.getElementById('jobInput').value.trim().toUpperCase();
         const startStr = document.getElementById('startDate').value;
         const endStr = document.getElementById('endDate').value;
@@ -380,6 +384,25 @@
             const q = query(logsRef, ...queryConstraints);
             const querySnapshot = await getDocs(q);
             
+            // 1. 處理日期區間文字
+            let dateText = "";
+            if (!showAll && (startStr || endStr)) {
+                let s = startStr ? startStr : "最舊";
+                let e = endStr ? endStr : "最新";
+                dateText = `(${s} ~ ${e}) `;
+            }
+            
+            // 2. 判斷排序方式的中文
+            let sortText = (sortOrder === 'desc') ? "由新到舊" : "由舊到新";
+            
+            // 3. 組合出完整的句子
+            let summaryString = `${dateText}找到了 ${querySnapshot.size} 筆工令，一次顯示 ${limitVal} 筆，${sortText}排列`;
+            
+            // 4. 將文字顯示在剛剛新增的 HTML 容器中
+            const summaryDiv = document.getElementById("searchSummary");
+            summaryDiv.innerText = summaryString;
+            summaryDiv.style.display = "block"; // 讓原本隱藏的容器顯示出來
+
             let html = '';
 
             querySnapshot.forEach((doc) => {
