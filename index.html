@@ -362,12 +362,12 @@
 
         try {
             if (!showAll) {
-                // 👇 將原本單一的 where 改為 or 條件
                 if (jobNo) {
                     queryConstraints.push(
                         or(
                             where("job_no", "==", jobNo),
-                            where("job_no_last_5", "==", jobNo)
+                            where("job_no_last_5", "==", jobNo),
+                            where("job_no_last_6", "==", jobNo)
                         )
                     );
                 }
