@@ -213,6 +213,34 @@
             .container { padding: 15px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
         }
+        
+        /* 彈出視窗樣式 (Modal) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 450px;
+            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            background: #f8f9fa; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-header h3 { margin: 0; font-size: 18px; color: #333; }
+        .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; }
+        .modal-body { padding: 20px; }
+        
+        .annealing-btn {
+            background-color: #ff9800; color: white; border: none; padding: 8px 15px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px;
+            display: inline-flex; align-items: center; gap: 5px; font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .annealing-btn:hover { background-color: #e68a00; }
+        
     </style>
 </head>
 <body>
@@ -291,12 +319,39 @@
             <tbody id="resultTableBody">
             </tbody>
         </table>
+        
+        <div id="annealingModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🔥 退火紀錄反向檢索結果</h3>
+            <button class="close-btn" onclick="closeAnnealingModal()">✖</button>
+        </div>
+        <div class="modal-body">
+            <div id="annealingLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
+                🔄 正在資料庫中急速比對交集...
+            </div>
+            <div class="table-wrapper">
+                <table id="annealingResultTable" style="display: none; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="background-color:#fff3e0;">退火分頁名稱</th>
+                            <th style="background-color:#fff3e0;">命中編號數量</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annealingTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <div id="annealingNoResult" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight:bold;">
+                查無相符的退火紀錄。
+            </div>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, query, where, or, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, or, getDocs, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyASJw9EjW2pisBRlV5RdQp6pJGVYVSDv6Y",
@@ -442,6 +497,20 @@
                         `;
                     });
                 }
+                
+                // 👇 判斷是否有本體銲補的紀錄
+                const annealingIds = data.target_annealing_ids || [];
+                let annealingBtnHtml = '';
+                if (annealingIds.length > 0) {
+                    // 把陣列轉成 JSON 字串，方便傳遞給 onclick
+                    const idsJson = JSON.stringify(annealingIds).replace(/"/g, '&quot;');
+                    annealingBtnHtml = `
+                        <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px;">
+                            <p style="margin:0 0 5px 0; font-size: 13px; color: #666; font-weight:bold;">📌 偵測到 ${annealingIds.length} 個本體銲補編號 (可查詢關聯退火表)</p>
+                            <button class="annealing-btn" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行退火紀錄反向檢索</button>
+                        </div>
+                    `;
+                }
 
                 html += `
                     <tr class="main-row" onclick="toggleDetails('${docId}')">
@@ -453,7 +522,7 @@
                         <td colspan="3" style="padding: 0; border: none;">
                             <div class="details-content">
                                 ${detailsHtml}
-                            </div>
+                                ${annealingBtnHtml} </div>
                         </td>
                     </tr>
                 `;
@@ -492,6 +561,79 @@
             row.style.display = 'none';
         } else {
             row.style.display = 'table-row';
+        }
+    }
+    
+    // 關閉視窗
+    window.closeAnnealingModal = function() {
+        document.getElementById("annealingModal").style.display = "none";
+    }
+
+    // 🔥 核心：反向檢索與排序演算法
+    window.searchAnnealingIds = async function(idsJsonStr) {
+        // 將字串還原為陣列
+        const ids = JSON.parse(idsJsonStr.replace(/&quot;/g, '"'));
+        
+        // UI 狀態切換
+        document.getElementById("annealingModal").style.display = "flex";
+        document.getElementById("annealingLoading").style.display = "block";
+        document.getElementById("annealingResultTable").style.display = "none";
+        document.getElementById("annealingNoResult").style.display = "none";
+        document.getElementById("annealingTableBody").innerHTML = "";
+
+        let sheetCounter = {}; // 用來計數每個分頁命中多少次
+
+        try {
+            // 利用反向索引：有幾筆 ID，就只去 Firebase 讀幾次 Document (極度省錢且快速)
+            for (let i = 0; i < ids.length; i++) {
+                const docRef = doc(db, "roll_annealing_index", ids[i]);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const sheetsArray = docSnap.data().sheets || [];
+                    // 該 ID 出現在哪些分頁，就把那些分頁的計數器 +1
+                    sheetsArray.forEach(sheetNum => {
+                        if (!sheetCounter[sheetNum]) sheetCounter[sheetNum] = 0;
+                        sheetCounter[sheetNum]++;
+                    });
+                }
+            }
+
+            const sheetKeys = Object.keys(sheetCounter);
+            
+            if (sheetKeys.length === 0) {
+                document.getElementById("annealingNoResult").style.display = "block";
+            } else {
+                // 將計數結果轉為陣列以便排序
+                let sortedSheets = sheetKeys.map(k => ({ name: k, count: sheetCounter[k] }));
+                
+                // 排序邏輯：
+                // 1. 命中數量 (由大到小)
+                // 2. 分頁名稱轉數字 (由大到小)
+                sortedSheets.sort((a, b) => {
+                    if (b.count !== a.count) return b.count - a.count;
+                    return parseInt(b.name) - parseInt(a.name);
+                });
+
+                // 取 Top 5
+                const top5 = sortedSheets.slice(0, 5);
+                
+                // 渲染表格
+                let tbodyHtml = '';
+                top5.forEach(s => {
+                    tbodyHtml += `<tr><td style="font-weight:bold; font-size:16px;">${s.name}</td><td><b style="color:#ff4b4b;">${s.count}</b> 個</td></tr>`;
+                });
+                
+                document.getElementById("annealingTableBody").innerHTML = tbodyHtml;
+                document.getElementById("annealingResultTable").style.display = "table";
+            }
+
+        } catch(error) {
+            console.error("退火查詢失敗", error);
+            document.getElementById("annealingNoResult").innerText = "查詢發生錯誤，請檢查網路連線。";
+            document.getElementById("annealingNoResult").style.display = "block";
+        } finally {
+            document.getElementById("annealingLoading").style.display = "none";
         }
     }
     
