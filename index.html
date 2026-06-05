@@ -251,7 +251,7 @@
     <div class="search-box">
         <div class="input-group">
             <label>🔍 工令號碼</label>
-            <input type="email" id="jobInput" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" autocomplete="off" spellcheck="false" placeholder="輸入完整工令或工令後5或6碼 (按 Enter 搜尋)">
+            <input type="text" id="jobInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" placeholder="輸入完整工令或工令後5或6碼 (按 Enter 搜尋)">
         </div>
         <div class="btn-group">
             <button onclick="searchLogs()">🔍 查詢</button>
