@@ -571,13 +571,15 @@
                             allBodyIds = allBodyIds.concat(group.ids || []);
                         });
                         
-                        // 🛡️ 加上這行：給退火搜尋專用的陣列去重，避免重複搜尋耗能
+                        // 🛡️ 給退火搜尋專用的陣列去重，避免重複搜尋耗能
                         allBodyIds = [...new Set(allBodyIds)];
                         
                         const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
+                        
+                        // 👇 這裡修改了按鈕文字，並加上 style="width: fit-content;" 讓橘色背景貼合文字長度
                         searchBtnHtml = `
                             <br>
-                            <button class="annealing-btn" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行退火紀錄反向檢索</button>
+                            <button class="annealing-btn" style="width: fit-content; padding: 6px 15px;" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行本體銲補退火紀錄反向檢索</button>
                         `;
                     }
 
