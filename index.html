@@ -516,14 +516,14 @@
                 
                 if (hasBody || hasJournal) {
                     
-                    // 2. 決定折疊按鈕的動態標題文字
+                    // 2. 決定折疊按鈕的動態標題文字 (使用 <br> 強制斷行)
                     let summaryText = "";
                     if (hasBody && hasJournal) {
-                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 及 ${totalJournalCount} 個軸頸銲補編號 (點開查看明細項目) ▾`;
+                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 及 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
                     } else if (hasBody) {
-                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 (點開查看明細項目) ▾`;
+                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號<br>(點開查看明細項目) ▾`;
                     } else if (hasJournal) {
-                        summaryText = `📌 偵測到 ${totalJournalCount} 個軸頸銲補編號 (點開查看明細項目) ▾`;
+                        summaryText = `📌 偵測到 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
                     }
 
                     // 3. 逐項展開並分類排版 HTML
