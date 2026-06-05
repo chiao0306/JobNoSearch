@@ -69,6 +69,15 @@
             flex: 1;
             min-width: 200px;
         }
+        
+        /* 👇 新增這段：強制群組內的按鈕平分寬度，並稍微縮小字體與內距避免字被擠爆 */
+        .btn-group button {
+            flex: 1;
+            padding: 10px 4px;
+            white-space: nowrap;
+            font-size: 14.5px;
+        }
+
         button { 
             background-color: #ff4b4b; 
             color: white; 
