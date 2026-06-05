@@ -498,62 +498,87 @@
                     });
                 }
                 
-                // 👇 判斷是否有本體銲補或軸頸銲補的紀錄
-                const bodyWeldIds = data.target_annealing_ids || [];
-                const journalWeldIds = data.journal_weld_ids || [];
+                // 👇 判斷是否有本體銲補或軸頸銲補的紀錄 (升級為項目分類與自動計數版)
+                const bodyWeldGroups = data.target_annealing_ids || [];   // 結構: [{title: '...', ids: [...]}]
+                const journalWeldGroups = data.journal_weld_ids || [];   // 結構: [{title: '...', ids: [...]}]
                 
-                const hasBody = bodyWeldIds.length > 0;
-                const hasJournal = journalWeldIds.length > 0;
+                // 1. 動態加總算出一共有幾個不重複的編號
+                let totalBodyCount = 0;
+                bodyWeldGroups.forEach(g => { totalBodyCount += (g.ids || []).length; });
+                
+                let totalJournalCount = 0;
+                journalWeldGroups.forEach(g => { totalJournalCount += (g.ids || []).length; });
+
+                const hasBody = totalBodyCount > 0;
+                const hasJournal = totalJournalCount > 0;
 
                 let annealingBtnHtml = '';
                 
-                // 只要有任何一種銲補編號存在，就顯示區塊
                 if (hasBody || hasJournal) {
                     
-                    // 1. 決定折疊按鈕的標題文字
+                    // 2. 決定折疊按鈕的動態標題文字
                     let summaryText = "";
                     if (hasBody && hasJournal) {
-                        summaryText = `📌 偵測到 ${bodyWeldIds.length} 個本體銲補編號 及 ${journalWeldIds.length} 個軸頸銲補編號 (點開查看編號) ▾`;
+                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 及 ${totalJournalCount} 個軸頸銲補編號 (點開查看明細項目) ▾`;
                     } else if (hasBody) {
-                        summaryText = `📌 偵測到 ${bodyWeldIds.length} 個本體銲補編號 (點開查看編號) ▾`;
+                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 (點開查看明細項目) ▾`;
                     } else if (hasJournal) {
-                        summaryText = `📌 偵測到 ${journalWeldIds.length} 個軸頸銲補編號 (點開查看編號) ▾`;
+                        summaryText = `📌 偵測到 ${totalJournalCount} 個軸頸銲補編號 (點開查看明細項目) ▾`;
                     }
 
-                    // 2. 組合展開後的上下區塊 HTML
+                    // 3. 逐項展開並分類排版 HTML
                     let listHtml = "";
                     
                     if (hasBody) {
-                        const bodyTags = bodyWeldIds.map(id => `<span style="display:inline-block; background:#eee; padding:3px 8px; border-radius:4px; margin:3px; font-size:12px; color:#333; border: 1px solid #ddd;">${id}</span>`).join('');
                         listHtml += `
-                            <div style="margin-bottom: 8px;">
-                                <div style="font-size: 13px; color: #666; margin-bottom: 3px; font-weight: bold;">【本體銲補】</div>
-                                ${bodyTags}
-                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div style="font-size: 14px; color: #333; margin-bottom: 6px; font-weight: bold; border-bottom: 2px solid #ff4b4b; padding-bottom: 2px; display: inline-block;">【本體銲補明細】</div>
                         `;
+                        bodyWeldGroups.forEach(group => {
+                            const bodyTags = group.ids.map(id => `<span style="display:inline-block; background:#eee; padding:3px 8px; border-radius:4px; margin:3px; font-size:12px; color:#333; border: 1px solid #ddd;">${id}</span>`).join('');
+                            listHtml += `
+                                <div style="margin-left: 8px; margin-bottom: 8px;">
+                                    <div style="font-size: 12.5px; color: #e64a19; font-weight: bold;">▪ ${group.title} <span style="color:#666; font-weight:normal;">(${group.ids.length} 件)</span></div>
+                                    <div style="padding-left: 4px;">${bodyTags}</div>
+                                </div>
+                            `;
+                        });
+                        listHtml += `</div>`;
                     }
                     
                     if (hasJournal) {
-                        const journalTags = journalWeldIds.map(id => `<span style="display:inline-block; background:#eee; padding:3px 8px; border-radius:4px; margin:3px; font-size:12px; color:#333; border: 1px solid #ddd;">${id}</span>`).join('');
                         listHtml += `
                             <div style="margin-bottom: 4px;">
-                                <div style="font-size: 13px; color: #666; margin-bottom: 3px; font-weight: bold;">【軸頸銲補】</div>
-                                ${journalTags}
-                            </div>
+                                <div style="font-size: 14px; color: #333; margin-bottom: 6px; font-weight: bold; border-bottom: 2px solid #6c757d; padding-bottom: 2px; display: inline-block;">【軸頸銲補明細】</div>
                         `;
+                        journalWeldGroups.forEach(group => {
+                            const journalTags = group.ids.map(id => `<span style="display:inline-block; background:#eee; padding:3px 8px; border-radius:4px; margin:3px; font-size:12px; color:#333; border: 1px solid #ddd;">${id}</span>`).join('');
+                            listHtml += `
+                                <div style="margin-left: 8px; margin-bottom: 8px;">
+                                    <div style="font-size: 12.5px; color: #495057; font-weight: bold;">▪ ${group.title} <span style="color:#666; font-weight:normal;">(${group.ids.length} 件)</span></div>
+                                    <div style="padding-left: 4px;">${journalTags}</div>
+                                </div>
+                            `;
+                        });
+                        listHtml += `</div>`;
                     }
 
-                    // 3. 🚀 核心修改：反向檢索按鈕「只有在本體銲補存在時」才會出現，且只帶入 bodyWeldIds
+                    // 4. 🚀 檢索隔離防線：反向檢索只打包【本體銲補】的純編號，軸頸完全不參與
                     let searchBtnHtml = '';
                     if (hasBody) {
-                        const idsJson = JSON.stringify(bodyWeldIds).replace(/"/g, '&quot;');
+                        let allBodyIds = [];
+                        bodyWeldGroups.forEach(group => {
+                            allBodyIds = allBodyIds.concat(group.ids || []);
+                        });
+                        
+                        const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
                         searchBtnHtml = `
                             <br>
                             <button class="annealing-btn" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行退火紀錄反向檢索</button>
                         `;
                     }
 
-                    // 4. 輸出最終區塊 HTML
+                    // 5. 輸出最終綜合折疊卡片 HTML
                     annealingBtnHtml = `
                         <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px;">
                             <p onclick="event.stopPropagation(); toggleAnnealingList('list-${docId}')" style="margin:0 0 5px 0; font-size: 13px; color: #007bff; font-weight:bold; cursor: pointer; display: inline-block;">
