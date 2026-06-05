@@ -571,6 +571,9 @@
                             allBodyIds = allBodyIds.concat(group.ids || []);
                         });
                         
+                        // 🛡️ 加上這行：給退火搜尋專用的陣列去重，避免重複搜尋耗能
+                        allBodyIds = [...new Set(allBodyIds)];
+                        
                         const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
                         searchBtnHtml = `
                             <br>
