@@ -516,14 +516,14 @@
                 
                 if (hasBody || hasJournal) {
                     
-                    // 2. 決定折疊按鈕的動態標題文字 (使用 <br> 強制斷行)
+                    // 2. 決定折疊按鈕的動態標題文字 (拔掉圖示，準備交給外層對齊)
                     let summaryText = "";
                     if (hasBody && hasJournal) {
-                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號 及 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
+                        summaryText = `偵測到 ${totalBodyCount} 個本體銲補編號 及 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
                     } else if (hasBody) {
-                        summaryText = `📌 偵測到 ${totalBodyCount} 個本體銲補編號<br>(點開查看明細項目) ▾`;
+                        summaryText = `偵測到 ${totalBodyCount} 個本體銲補編號<br>(點開查看明細項目) ▾`;
                     } else if (hasJournal) {
-                        summaryText = `📌 偵測到 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
+                        summaryText = `偵測到 ${totalJournalCount} 個軸頸銲補編號<br>(點開查看明細項目) ▾`;
                     }
 
                     // 3. 逐項展開並分類排版 HTML
@@ -583,12 +583,13 @@
                         `;
                     }
 
-                    // 5. 輸出最終綜合折疊卡片 HTML
+                    // 5. 輸出最終綜合折疊卡片 HTML (使用 Flexbox 讓文字完美齊頭)
                     annealingBtnHtml = `
                         <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px;">
-                            <p onclick="event.stopPropagation(); toggleAnnealingList('list-${docId}')" style="margin:0 0 5px 0; font-size: 13px; color: #007bff; font-weight:bold; cursor: pointer; display: inline-block;">
-                                ${summaryText}
-                            </p>
+                            <div onclick="event.stopPropagation(); toggleAnnealingList('list-${docId}')" style="margin:0 0 5px 0; font-size: 13px; color: #007bff; font-weight:bold; cursor: pointer; display: flex; align-items: flex-start;">
+                                <span style="margin-right: 4px;">📌</span>
+                                <span>${summaryText}</span>
+                            </div>
                             
                             <div id="list-${docId}" style="display: none; margin-bottom: 10px; padding: 10px; background: #fff; border-radius: 6px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05);">
                                 ${listHtml}
