@@ -576,17 +576,18 @@
                         
                         const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
                         
-                        // 👇 這裡修改了按鈕文字，並加上 style="width: fit-content;" 讓橘色背景貼合文字長度
+                        // 👇 拔掉了 <br>，改成用 margin-top: 5px 微調間距
                         searchBtnHtml = `
-                            <br>
-                            <button class="annealing-btn" style="width: fit-content; padding: 6px 15px;" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行本體銲補退火紀錄反向檢索</button>
+                            <div style="margin-top: 5px;">
+                                <button class="annealing-btn" style="width: fit-content; padding: 6px 15px;" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行本體銲補退火紀錄反向檢索</button>
+                            </div>
                         `;
                     }
 
                     // 5. 輸出最終綜合折疊卡片 HTML (使用 Flexbox 讓文字完美齊頭)
                     annealingBtnHtml = `
                         <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 12px;">
-                            <div onclick="event.stopPropagation(); toggleAnnealingList('list-${docId}')" style="margin:0 0 5px 0; font-size: 13px; color: #007bff; font-weight:bold; cursor: pointer; display: flex; align-items: flex-start;">
+                            <div onclick="event.stopPropagation(); toggleAnnealingList('list-${docId}')" style="margin:0 0 5px 0; font-size: 14.5px; color: #007bff; font-weight:bold; cursor: pointer; display: flex; align-items: flex-start;">
                                 <span style="margin-right: 4px;">📌</span>
                                 <span>${summaryText}</span>
                             </div>
