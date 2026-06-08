@@ -250,10 +250,10 @@
         }
         .annealing-btn:hover { background-color: #e68a00; }
 
-        /* 🗂️ 依工令群組排序的交錯底色 */
-        tr.main-row.grouped-bg-alt { background-color: #fff8f0; } /* 淡膚米白 */
-        tr.main-row.grouped-bg-alt:hover { background-color: #ffeed6; }
-        .details-content.grouped-bg-alt { background-color: #fff8f0; }
+        /* 🗂️ 依工令群組排序的交錯底色 (加深膚色版) */
+        tr.main-row.grouped-bg-alt { background-color: #fae8d2; } 
+        tr.main-row.grouped-bg-alt:hover { background-color: #ebd3b7; }
+        .details-content.grouped-bg-alt { background-color: #fae8d2; }
         
     </style>
 </head>
@@ -315,8 +315,8 @@
                     <option value="asc">時間舊 ➔ 新</option>
                 </select>
             </div>
-            <div class="input-group" style="flex: 100%; border-top: 1px dashed #eee; padding-top: 15px; margin-top: 5px;">
-                <button type="button" id="groupByJobBtn" class="secondary" onclick="toggleGroupSort()" style="width: auto; padding: 10px 20px;">
+            <div class="input-group" style="flex: 100%; border-top: 1px dashed #eee; padding-top: 15px; margin-top: 5px; align-items: flex-start;">
+                <button type="button" id="groupByJobBtn" class="secondary" onclick="toggleGroupSort()" style="width: fit-content; padding: 10px 20px;">
                     🗂️ 依工令名稱群組排列 (目前：關閉)
                 </button>
             </div>
