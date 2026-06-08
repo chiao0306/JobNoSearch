@@ -249,6 +249,11 @@
             transition: background-color 0.2s;
         }
         .annealing-btn:hover { background-color: #e68a00; }
+
+        /* 🗂️ 依工令群組排序的交錯底色 */
+        tr.main-row.grouped-bg-alt { background-color: #fff8f0; } /* 淡膚米白 */
+        tr.main-row.grouped-bg-alt:hover { background-color: #ffeed6; }
+        .details-content.grouped-bg-alt { background-color: #fff8f0; }
         
     </style>
 </head>
@@ -309,6 +314,11 @@
                     <option value="desc">時間新 ➔ 舊</option>
                     <option value="asc">時間舊 ➔ 新</option>
                 </select>
+            </div>
+            <div class="input-group" style="flex: 100%; border-top: 1px dashed #eee; padding-top: 15px; margin-top: 5px;">
+                <button type="button" id="groupByJobBtn" class="secondary" onclick="toggleGroupSort()" style="width: auto; padding: 10px 20px;">
+                    🗂️ 依工令名稱群組排列 (目前：關閉)
+                </button>
             </div>
         </div>
     </details>
@@ -472,7 +482,15 @@
             summaryDiv.innerText = summaryString;
             summaryDiv.style.display = "block"; // 讓原本隱藏的容器顯示出來
 
-            let html = '';
+            // 初始化全域變數並重置按鈕狀態
+            window.fetchedRecords = []; 
+            window.isGrouped = false;   
+            const groupBtn = document.getElementById('groupByJobBtn');
+            if (groupBtn) {
+                groupBtn.innerText = '🗂️ 依工令名稱群組排列 (目前：關閉)';
+                groupBtn.className = 'secondary'; 
+                groupBtn.style.backgroundColor = ''; 
+            }
 
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
@@ -610,27 +628,36 @@
                     `;
                 }
                 
-                html += `
-                    <tr class="main-row" onclick="toggleDetails('${docId}')">
+                // 將資料存入陣列，並埋入 {BG_CLASS} 佔位符
+                const mainHtml = `
+                    <tr class="main-row {BG_CLASS}" onclick="toggleDetails('${docId}')">
                         <td class="date-col">${shortDateStr}<br><span class="time-text">${timeStr}</span></td>
                         <td class="job-col"><strong>${data.job_no}</strong></td>
                         <td class="status-col ${statusClass}">${data.status}</td>
                     </tr>
+                `;
+                const detailHtml = `
                     <tr id="details-${docId}" class="details-row">
                         <td colspan="3" style="padding: 0; border: none;">
-                            <div class="details-content">
+                            <div class="details-content {BG_CLASS}">
                                 ${detailsHtml}
-                                ${annealingBtnHtml} </div>
+                                ${annealingBtnHtml} 
+                            </div>
                         </td>
                     </tr>
                 `;
+
+                window.fetchedRecords.push({
+                    id: docId,
+                    jobNo: data.job_no,
+                    time: dateObj.getTime(),
+                    mainHtml: mainHtml,
+                    detailHtml: detailHtml
+                });
             });
 
-            if(html === '') {
-                html = '<tr><td colspan="3" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
-            }
-
-            document.getElementById('resultTableBody').innerHTML = html;
+            // 呼叫前端渲染邏輯
+            window.renderRecords();
             
         } catch (error) {
             console.error("查詢失敗:", error);
@@ -751,6 +778,65 @@
         } finally {
             document.getElementById("annealingLoading").style.display = "none";
         }
+    }
+
+    // ===== 前端渲染與排序邏輯 =====
+    window.renderRecords = function() {
+        let htmlToRender = '';
+        
+        if (!window.isGrouped) {
+            window.fetchedRecords.forEach(record => {
+                htmlToRender += record.mainHtml.replace(/{BG_CLASS}/g, '') + record.detailHtml.replace(/{BG_CLASS}/g, '');
+            });
+        } else {
+            const groups = {};
+            window.fetchedRecords.forEach(record => {
+                if (!groups[record.jobNo]) {
+                    groups[record.jobNo] = { jobNo: record.jobNo, maxTime: 0, records: [] };
+                }
+                groups[record.jobNo].records.push(record);
+                if (record.time > groups[record.jobNo].maxTime) {
+                    groups[record.jobNo].maxTime = record.time;
+                }
+            });
+            
+            const sortedGroups = Object.values(groups).sort((a, b) => b.maxTime - a.maxTime);
+            
+            let isAltColor = false;
+            sortedGroups.forEach(group => {
+                const bgClass = isAltColor ? 'grouped-bg-alt' : '';
+                group.records.forEach(record => {
+                    htmlToRender += record.mainHtml.replace(/{BG_CLASS}/g, bgClass) + record.detailHtml.replace(/{BG_CLASS}/g, bgClass);
+                });
+                isAltColor = !isAltColor; 
+            });
+        }
+        
+        if(htmlToRender === '') {
+            htmlToRender = '<tr><td colspan="3" style="text-align:center; padding: 20px; font-size: 14px;">查無相符資料</td></tr>';
+        }
+        document.getElementById('resultTableBody').innerHTML = htmlToRender;
+    }
+
+    // ===== 按鈕切換邏輯 =====
+    window.toggleGroupSort = function() {
+        if (!window.fetchedRecords || window.fetchedRecords.length === 0) return; 
+        
+        window.isGrouped = !window.isGrouped;
+        const btn = document.getElementById('groupByJobBtn');
+        
+        if (window.isGrouped) {
+            btn.innerText = '🗂️ 依工令名稱群組排列 (目前：開啟)';
+            btn.className = ''; 
+            btn.style.backgroundColor = '#ff4b4b'; 
+            btn.style.color = 'white';
+        } else {
+            btn.innerText = '🗂️ 依工令名稱群組排列 (目前：關閉)';
+            btn.className = 'secondary';
+            btn.style.backgroundColor = ''; 
+        }
+        
+        window.renderRecords(); 
     }
     
     window.onload = () => window.searchLogs(true);
