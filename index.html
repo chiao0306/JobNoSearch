@@ -345,66 +345,64 @@
             <tbody id="resultTableBody">
             </tbody>
         </table>
-        
-        <div id="annealingModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>🔥 退火紀錄反向檢索結果</h3>
-            <button class="close-btn" onclick="closeAnnealingModal()">✖</button>
-        </div>
-        <div class="modal-body">
-            <div id="annealingLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
-                🔄 正在資料庫中急速比對交集...
+    </div> <div id="annealingModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔥 退火紀錄反向檢索結果</h3>
+                <button class="close-btn" onclick="closeAnnealingModal()">✖</button>
             </div>
-            <div class="table-wrapper">
-                <table id="annealingResultTable" style="display: none; width: 100%;">
-                    <thead>
-                        <tr>
-                            <th style="background-color:#fff3e0;">退火分頁名稱</th>
-                            <th style="background-color:#fff3e0;">命中編號數量</th>
-                        </tr>
-                    </thead>
-                    <tbody id="annealingTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div id="annealingNoResult" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight:bold;">
-                查無相符的退火紀錄。
+            <div class="modal-body">
+                <div id="annealingLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
+                    🔄 正在資料庫中急速比對交集...
+                </div>
+                <div class="table-wrapper">
+                    <table id="annealingResultTable" style="display: none; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="background-color:#fff3e0;">退火分頁名稱</th>
+                                <th style="background-color:#fff3e0;">命中編號數量</th>
+                            </tr>
+                        </thead>
+                        <tbody id="annealingTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="annealingNoResult" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight:bold;">
+                    查無相符的退火紀錄。
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- 🔥 退火重量計算 Modal -->
-<div id="weightModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 680px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column;">
-        <div class="modal-header">
-            <h3>&#9878;&#65039; 退火用料重量計算</h3>
-            <button class="close-btn" onclick="closeWeightModal()">&#10006;</button>
-        </div>
-        <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 15px;">
-            <div id="weightLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
-                &#9881;&#65039; 計算中...
+    <div id="weightModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 680px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3>⚖️ 退火用料重量計算</h3>
+                <button class="close-btn" onclick="closeWeightModal()">✖</button>
             </div>
-            <div id="weightResult" style="display: none;">
-                <div id="weightBodySection">
-                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #ff4b4b; padding-bottom: 4px; margin-bottom: 10px;">&#12304;本體銲補&#12305;</div>
-                    <div id="weightBodyRows"></div>
-                    <div id="weightBodyTotal" style="margin-top: 8px; padding: 10px 14px; background: #fff3e0; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #e65100; line-height: 2;"></div>
+            <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 15px;">
+                <div id="weightLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
+                    ⚙️ 計算中...
                 </div>
-                <div style="height: 1px; background: #eee; margin: 18px 0;"></div>
-                <div id="weightJournalSection">
-                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #6c757d; padding-bottom: 4px; margin-bottom: 10px;">&#12304;軸頸銲補&#12305;</div>
-                    <div id="weightJournalRows"></div>
-                    <div id="weightJournalTotal" style="margin-top: 8px; padding: 10px 14px; background: #f0f4ff; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #1a237e; line-height: 2;"></div>
+                <div id="weightResult" style="display: none;">
+                    <div id="weightBodySection">
+                        <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #ff4b4b; padding-bottom: 4px; margin-bottom: 10px;">【本體銲補】</div>
+                        <div id="weightBodyRows"></div>
+                        <div id="weightBodyTotal" style="margin-top: 8px; padding: 10px 14px; background: #fff3e0; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #e65100; line-height: 2;"></div>
+                    </div>
+                    <div style="height: 1px; background: #eee; margin: 18px 0;"></div>
+                    <div id="weightJournalSection">
+                        <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #6c757d; padding-bottom: 4px; margin-bottom: 10px;">【軸頸銲補】</div>
+                        <div id="weightJournalRows"></div>
+                        <div id="weightJournalTotal" style="margin-top: 8px; padding: 10px 14px; background: #f0f4ff; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #1a237e; line-height: 2;"></div>
+                    </div>
                 </div>
-            </div>
-            <div id="weightNoData" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight: bold;">
-                無可計算的銲補明細。
+                <div id="weightNoData" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight: bold;">
+                    無可計算的銲補明細。
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -749,14 +747,16 @@
         }
     }
     
-    // 關閉視窗
+    // 關閉視窗 (包含解除背景鎖定)
     window.closeAnnealingModal = function() {
         document.getElementById("annealingModal").style.display = "none";
+        document.body.style.overflow = ''; // 🔓 恢復背景滾動
     }
 
-    // 關閉重量計算視窗
+    // 關閉重量計算視窗 (包含解除背景鎖定)
     window.closeWeightModal = function() {
         document.getElementById("weightModal").style.display = "none";
+        document.body.style.overflow = ''; // 🔓 恢復背景滾動
     }
 
     // ===== 自動退火計算表 (直接內嵌，不需要任何額外讀取) =====
@@ -833,8 +833,10 @@
         return null;
     }
 
-    // 主計算函式
+    // 主計算函式 (重量計算)
     window.openWeightModal = function(bodyGroupsEncoded, journalGroupsEncoded) {
+        document.body.style.overflow = 'hidden'; // 🔒 打開時鎖定背景滾動
+        
         const bodyGroups = JSON.parse(bodyGroupsEncoded.replace(/&quot;/g, '"'));
         const journalGroups = JSON.parse(journalGroupsEncoded.replace(/&quot;/g, '"'));
 
@@ -902,9 +904,10 @@
                 }
             });
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
+            // 恢復原本的三行，只針對中間的合計加上較大的字體與微調間距
             document.getElementById("weightBodyTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
-                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span><br>` +
+                `<div style="font-size: 17px; font-weight: 900; letter-spacing: 0.5px; margin: 6px 0;">合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span></div>` +
                 `減半用量　銲線 <span style="color:#c62828;">${(bodyWireTotal / 2).toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${(bodyFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightBodySection").style.display = "block";
         } else {
@@ -926,9 +929,10 @@
                 journalHtml += makeJournalCard(group.title, pc, wire, flux);
             });
             document.getElementById("weightJournalRows").innerHTML = journalHtml;
+            // 恢復原本的三行，只針對中間的合計加上較大的字體與微調間距
             document.getElementById("weightJournalTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${journalPcTotal} PC</span><br>` +
-                `合計　　銲線 <span style="color:#e65100;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${journalFluxTotal.toFixed(1)} kg</span><br>` +
+                `<div style="font-size: 17px; font-weight: 900; letter-spacing: 0.5px; margin: 6px 0;">合計　　銲線 <span style="color:#e65100;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${journalFluxTotal.toFixed(1)} kg</span></div>` +
                 `減半用量　銲線 <span style="color:#e65100;">${(journalWireTotal / 2).toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${(journalFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightJournalSection").style.display = "block";
         } else {
@@ -941,6 +945,8 @@
 
     // 🔥 核心：反向檢索與排序演算法
     window.searchAnnealingIds = async function(idsJsonStr) {
+        document.body.style.overflow = 'hidden'; // 🔒 打開時鎖定背景滾動
+        
         // 將字串還原為陣列
         const ids = JSON.parse(idsJsonStr.replace(/&quot;/g, '"'));
         
@@ -954,14 +960,12 @@
         let sheetCounter = {}; // 用來計數每個分頁命中多少次
 
         try {
-            // 利用反向索引：有幾筆 ID，就只去 Firebase 讀幾次 Document (極度省錢且快速)
             for (let i = 0; i < ids.length; i++) {
                 const docRef = doc(db, "roll_annealing_index", ids[i]);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
                     const sheetsArray = docSnap.data().sheets || [];
-                    // 該 ID 出現在哪些分頁，就把那些分頁的計數器 +1
                     sheetsArray.forEach(sheetNum => {
                         if (!sheetCounter[sheetNum]) sheetCounter[sheetNum] = 0;
                         sheetCounter[sheetNum]++;
@@ -974,21 +978,15 @@
             if (sheetKeys.length === 0) {
                 document.getElementById("annealingNoResult").style.display = "block";
             } else {
-                // 將計數結果轉為陣列以便排序
                 let sortedSheets = sheetKeys.map(k => ({ name: k, count: sheetCounter[k] }));
                 
-                // 排序邏輯：
-                // 1. 命中數量 (由大到小)
-                // 2. 分頁名稱轉數字 (由大到小)
                 sortedSheets.sort((a, b) => {
                     if (b.count !== a.count) return b.count - a.count;
                     return parseInt(b.name) - parseInt(a.name);
                 });
 
-                // 取 Top 5
                 const top5 = sortedSheets.slice(0, 5);
                 
-                // 渲染表格
                 let tbodyHtml = '';
                 top5.forEach(s => {
                     tbodyHtml += `<tr><td style="font-weight:bold; font-size:16px;">${s.name}</td><td><b style="color:#ff4b4b;">${s.count}</b> 個</td></tr>`;
