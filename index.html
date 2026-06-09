@@ -750,13 +750,15 @@
     // 關閉視窗 (包含解除背景鎖定)
     window.closeAnnealingModal = function() {
         document.getElementById("annealingModal").style.display = "none";
-        document.body.style.overflow = ''; // 🔓 恢復背景滾動
+        document.body.style.overflow = ''; 
+        document.documentElement.style.overflow = ''; // 🔓 解除雙重鎖定
     }
 
     // 關閉重量計算視窗 (包含解除背景鎖定)
     window.closeWeightModal = function() {
         document.getElementById("weightModal").style.display = "none";
-        document.body.style.overflow = ''; // 🔓 恢復背景滾動
+        document.body.style.overflow = ''; 
+        document.documentElement.style.overflow = ''; // 🔓 解除雙重鎖定
     }
 
     // ===== 自動退火計算表 (直接內嵌，不需要任何額外讀取) =====
@@ -835,7 +837,9 @@
 
     // 主計算函式 (重量計算)
     window.openWeightModal = function(bodyGroupsEncoded, journalGroupsEncoded) {
-        document.body.style.overflow = 'hidden'; // 🔒 打開時鎖定背景滾動
+        // 🔒 雙重鎖定背景滾動 (針對手機版瀏覽器)
+        document.body.style.overflow = 'hidden'; 
+        document.documentElement.style.overflow = 'hidden'; 
         
         const bodyGroups = JSON.parse(bodyGroupsEncoded.replace(/&quot;/g, '"'));
         const journalGroups = JSON.parse(journalGroupsEncoded.replace(/&quot;/g, '"'));
@@ -943,7 +947,9 @@
 
     // 🔥 核心：反向檢索與排序演算法
     window.searchAnnealingIds = async function(idsJsonStr) {
-        document.body.style.overflow = 'hidden'; // 🔒 打開時鎖定背景滾動
+        // 🔒 雙重鎖定背景滾動 (針對手機版瀏覽器)
+        document.body.style.overflow = 'hidden'; 
+        document.documentElement.style.overflow = 'hidden'; 
         
         // 將字串還原為陣列
         const ids = JSON.parse(idsJsonStr.replace(/&quot;/g, '"'));
