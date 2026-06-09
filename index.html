@@ -377,50 +377,26 @@
 
 <!-- 🔥 退火重量計算 Modal -->
 <div id="weightModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 600px; max-height: 90vh; display: flex; flex-direction: column;">
+    <div class="modal-content" style="max-width: 680px; width: 95vw; max-height: 92vh; display: flex; flex-direction: column;">
         <div class="modal-header">
-            <h3>⚖️ 退火用料重量計算</h3>
-            <button class="close-btn" onclick="closeWeightModal()">✖</button>
+            <h3>&#9878;&#65039; 退火用料重量計算</h3>
+            <button class="close-btn" onclick="closeWeightModal()">&#10006;</button>
         </div>
-        <div class="modal-body" style="overflow-y: auto; flex: 1;">
+        <div class="modal-body" style="overflow-y: auto; flex: 1; padding: 15px;">
             <div id="weightLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
-                ⚙️ 計算中...
+                &#9881;&#65039; 計算中...
             </div>
             <div id="weightResult" style="display: none;">
-                <!-- 本體銲補區塊 -->
                 <div id="weightBodySection">
-                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #ff4b4b; padding-bottom: 4px; margin-bottom: 10px;">【本體銲補】</div>
-                    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background:#fff3e0;">
-                                <th style="padding: 7px 10px; text-align:left; border-bottom: 1px solid #eee;">明細名稱</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">Target PC</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲線 (kg)</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲藥 (kg)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="weightBodyRows"></tbody>
-                    </table>
-                    <div id="weightBodyTotal" style="margin-top: 10px; padding: 8px 12px; background: #fff3e0; border-radius: 6px; font-size: 13px; font-weight: bold; color: #e65100;"></div>
+                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #ff4b4b; padding-bottom: 4px; margin-bottom: 10px;">&#12304;本體銲補&#12305;</div>
+                    <div id="weightBodyRows"></div>
+                    <div id="weightBodyTotal" style="margin-top: 8px; padding: 10px 14px; background: #fff3e0; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #e65100; line-height: 2;"></div>
                 </div>
-
                 <div style="height: 1px; background: #eee; margin: 18px 0;"></div>
-
-                <!-- 軸頸銲補區塊 -->
                 <div id="weightJournalSection">
-                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #6c757d; padding-bottom: 4px; margin-bottom: 10px;">【軸頸銲補】</div>
-                    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background:#f8f9fa;">
-                                <th style="padding: 7px 10px; text-align:left; border-bottom: 1px solid #eee;">明細名稱</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">Target PC</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲線 (kg)</th>
-                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲粉 (kg)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="weightJournalRows"></tbody>
-                    </table>
-                    <div id="weightJournalTotal" style="margin-top: 10px; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; font-size: 13px; font-weight: bold; color: #495057;"></div>
+                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #6c757d; padding-bottom: 4px; margin-bottom: 10px;">&#12304;軸頸銲補&#12305;</div>
+                    <div id="weightJournalRows"></div>
+                    <div id="weightJournalTotal" style="margin-top: 8px; padding: 10px 14px; background: #f0f4ff; border-radius: 8px; font-size: 13.5px; font-weight: bold; color: #1a237e; line-height: 2;"></div>
                 </div>
             </div>
             <div id="weightNoData" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight: bold;">
@@ -876,40 +852,58 @@
             return;
         }
 
+        // 卡片樣式helper
+        function makeCard(title, pc, wireVal, fluxVal, matched) {
+            if (matched) {
+                return `<div style="background:#fff; border: 1px solid #bbdefb; border-left: 4px solid #1976d2; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
+                    <div style="font-size: 13.5px; font-weight: bold; color: #1565c0; margin-bottom: 6px;">${title}</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <span style="background:#e3f2fd; color:#0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">PC: ${pc}</span>
+                        <span style="background:#fff3e0; color:#e65100; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">銲線 ${wireVal} kg</span>
+                        <span style="background:#fce4ec; color:#880e4f; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">銲藥 ${fluxVal} kg</span>
+                    </div>
+                </div>`;
+            } else {
+                return `<div style="background:#f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; opacity: 0.5;">
+                    <div style="font-size: 13px; color: #999; margin-bottom: 4px;">${title}</div>
+                    <div style="font-size: 12px; color: #bbb;">PC: ${pc} ／ 無對應退火規格</div>
+                </div>`;
+            }
+        }
+
+        function makeJournalCard(title, pc, wireVal, fluxVal) {
+            return `<div style="background:#fff; border: 1px solid #c5cae9; border-left: 4px solid #5c6bc0; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
+                <div style="font-size: 13.5px; font-weight: bold; color: #3949ab; margin-bottom: 6px;">${title}</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="background:#e8eaf6; color:#1a237e; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">PC: ${pc}</span>
+                    <span style="background:#fff3e0; color:#e65100; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">銲線 ${wireVal} kg</span>
+                    <span style="background:#e8f5e9; color:#1b5e20; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">銲粉 ${fluxVal} kg</span>
+                </div>
+            </div>`;
+        }
+
         // === 本體銲補計算 ===
         let bodyWireTotal = 0, bodyFluxTotal = 0;
-        let bodyRowsHtml = '';
+        let bodyHtml = '';
 
         if (hasBody) {
             bodyGroups.forEach(group => {
                 const match = matchAnnealingKeyword(group.title);
                 const pc = group.target_pc || 0;
-
                 if (match) {
                     const wire = (pc * match.wire).toFixed(1);
                     const flux = (pc * match.flux).toFixed(1);
                     bodyWireTotal += pc * match.wire;
                     bodyFluxTotal += pc * match.flux;
-                    bodyRowsHtml += `
-                        <tr>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; color: #1565c0; font-weight: bold;">${group.title}</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${pc}</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${wire}</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${flux}</td>
-                        </tr>`;
+                    bodyHtml += makeCard(group.title, pc, wire, flux, true);
                 } else {
-                    bodyRowsHtml += `
-                        <tr>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; color: #aaa;">${group.title}</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">${pc}</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">—</td>
-                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">—</td>
-                        </tr>`;
+                    bodyHtml += makeCard(group.title, pc, 0, 0, false);
                 }
             });
-            document.getElementById("weightBodyRows").innerHTML = bodyRowsHtml;
+            document.getElementById("weightBodyRows").innerHTML = bodyHtml;
             document.getElementById("weightBodyTotal").innerHTML =
-                `本體合計：銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#c62828;">${bodyFluxTotal.toFixed(1)} kg</span>`;
+                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span><br>` +
+                `減半用量　銲線 <span style="color:#c62828;">${(bodyWireTotal / 2).toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${(bodyFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightBodySection").style.display = "block";
         } else {
             document.getElementById("weightBodySection").style.display = "none";
@@ -917,7 +911,7 @@
 
         // === 軸頸銲補計算 ===
         let journalWireTotal = 0, journalFluxTotal = 0;
-        let journalRowsHtml = '';
+        let journalHtml = '';
 
         if (hasJournal) {
             journalGroups.forEach(group => {
@@ -926,17 +920,12 @@
                 const flux = (pc * 11).toFixed(1);
                 journalWireTotal += pc * 10;
                 journalFluxTotal += pc * 11;
-                journalRowsHtml += `
-                    <tr>
-                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee;">${group.title}</td>
-                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${pc}</td>
-                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${wire}</td>
-                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${flux}</td>
-                    </tr>`;
+                journalHtml += makeJournalCard(group.title, pc, wire, flux);
             });
-            document.getElementById("weightJournalRows").innerHTML = journalRowsHtml;
+            document.getElementById("weightJournalRows").innerHTML = journalHtml;
             document.getElementById("weightJournalTotal").innerHTML =
-                `軸頸合計：銲線 <span style="color:#1565c0;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1565c0;">${journalFluxTotal.toFixed(1)} kg</span>`;
+                `合計　　銲線 <span style="color:#e65100;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${journalFluxTotal.toFixed(1)} kg</span><br>` +
+                `減半用量　銲線 <span style="color:#e65100;">${(journalWireTotal / 2).toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${(journalFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightJournalSection").style.display = "block";
         } else {
             document.getElementById("weightJournalSection").style.display = "none";
