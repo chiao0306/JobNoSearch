@@ -226,7 +226,7 @@
         /* 彈出視窗樣式 (Modal) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 99999;
+            background: rgba(0,0,0,0.6); z-index: 1000;
             display: flex; justify-content: center; align-items: center;
         }
         .modal-content {
@@ -237,7 +237,6 @@
             background: #f8f9fa; padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #eee;
-            position: sticky; top: 0; z-index: 1;
         }
         .modal-header h3 { margin: 0; font-size: 18px; color: #333; }
         .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; }
@@ -866,7 +865,7 @@
                 </div>`;
             } else {
                 return `<div style="background:#f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; opacity: 0.5;">
-                    <div style="font-size: 13px; color: #999; margin-bottom: 4px;">${title} <span style="font-size:12px;">(無退火重量)</span></div>
+                    <div style="font-size: 13px; color: #999; margin-bottom: 4px;">${title} <span style="font-size:12px;">(無對應退火規格)</span></div>
                     <div style="font-size: 12px; color: #bbb;">PC: ${pc}</div>
                 </div>`;
             }
