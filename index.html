@@ -375,6 +375,61 @@
     </div>
 </div>
 
+<!-- 🔥 退火重量計算 Modal -->
+<div id="weightModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 600px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h3>⚖️ 退火用料重量計算</h3>
+            <button class="close-btn" onclick="closeWeightModal()">✖</button>
+        </div>
+        <div class="modal-body" style="overflow-y: auto; flex: 1;">
+            <div id="weightLoading" style="display: none; text-align: center; color: #666; padding: 20px;">
+                ⚙️ 計算中...
+            </div>
+            <div id="weightResult" style="display: none;">
+                <!-- 本體銲補區塊 -->
+                <div id="weightBodySection">
+                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #ff4b4b; padding-bottom: 4px; margin-bottom: 10px;">【本體銲補】</div>
+                    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background:#fff3e0;">
+                                <th style="padding: 7px 10px; text-align:left; border-bottom: 1px solid #eee;">明細名稱</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">Target PC</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲線 (kg)</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲藥 (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weightBodyRows"></tbody>
+                    </table>
+                    <div id="weightBodyTotal" style="margin-top: 10px; padding: 8px 12px; background: #fff3e0; border-radius: 6px; font-size: 13px; font-weight: bold; color: #e65100;"></div>
+                </div>
+
+                <div style="height: 1px; background: #eee; margin: 18px 0;"></div>
+
+                <!-- 軸頸銲補區塊 -->
+                <div id="weightJournalSection">
+                    <div style="font-size: 15px; font-weight: bold; color: #333; border-bottom: 2px solid #6c757d; padding-bottom: 4px; margin-bottom: 10px;">【軸頸銲補】</div>
+                    <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background:#f8f9fa;">
+                                <th style="padding: 7px 10px; text-align:left; border-bottom: 1px solid #eee;">明細名稱</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">Target PC</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲線 (kg)</th>
+                                <th style="padding: 7px 10px; text-align:center; border-bottom: 1px solid #eee; white-space:nowrap;">銲粉 (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weightJournalRows"></tbody>
+                    </table>
+                    <div id="weightJournalTotal" style="margin-top: 10px; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; font-size: 13px; font-weight: bold; color: #495057;"></div>
+                </div>
+            </div>
+            <div id="weightNoData" style="display: none; text-align: center; padding: 20px; color: #dc3545; font-weight: bold;">
+                無可計算的銲補明細。
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, query, where, or, getDocs, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -611,9 +666,14 @@
                         const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
                         
                         // 👇 拔掉了 <br>，改成用 margin-top: 5px 微調間距
+                        // 打包本體和軸頸完整資料給計算用
+                        const bodyGroupsJson = JSON.stringify(bodyWeldGroups).replace(/"/g, '&quot;');
+                        const journalGroupsJson = JSON.stringify(journalWeldGroups).replace(/"/g, '&quot;');
+                        
                         searchBtnHtml = `
-                            <div style="margin-top: 5px;">
+                            <div style="margin-top: 5px; display: flex; gap: 8px; flex-wrap: wrap;">
                                 <button class="annealing-btn" style="width: fit-content; padding: 6px 15px;" onclick="event.stopPropagation(); searchAnnealingIds('${idsJson}')">🔍 執行本體銲補退火紀錄反向檢索</button>
+                                <button class="annealing-btn" style="width: fit-content; padding: 6px 15px; background-color: #1976d2;" onmouseover="this.style.backgroundColor='#1565c0'" onmouseout="this.style.backgroundColor='#1976d2'" onclick="event.stopPropagation(); openWeightModal('${bodyGroupsJson}', '${journalGroupsJson}')">⚖️ 計算退火重量</button>
                             </div>
                         `;
                     }
@@ -716,6 +776,174 @@
     // 關閉視窗
     window.closeAnnealingModal = function() {
         document.getElementById("annealingModal").style.display = "none";
+    }
+
+    // 關閉重量計算視窗
+    window.closeWeightModal = function() {
+        document.getElementById("weightModal").style.display = "none";
+    }
+
+    // ===== 自動退火計算表 (直接內嵌，不需要任何額外讀取) =====
+    // 格式: { keyword組合: [銲線kg, 銲藥kg] }
+    // keyword 用 "+" 分隔，title 必須包含所有 keyword 才算配對
+    const ANNEALING_TABLE = {
+        "#1+200":        [180, 198],
+        "#1+250":        [230, 253],
+        "#1+280+1040":   [140, 154],
+        "#1+280+830":    [110, 121],
+        "#1+300":        [280, 308],
+        "#1+310+DRIVE":  [270, 297],
+        "#1+310+675":    [100, 110],
+        "#1+310+1135":   [170, 187],
+        "#1+480":        [450, 495],
+        "#2,3+200":      [170, 187],
+        "#2,3+250":      [240, 264],
+        "#2,3+300":      [258, 283],
+        "#2,3+350":      [290, 319],
+        "#2,3+400":      [340, 374],
+        "#2,3+480":      [400, 440],
+        "#4+170":        [109, 119],
+        "#4+200":        [128, 140.8],
+        "#4+240":        [154, 169.4],
+        "#4+270":        [173, 190.3],
+        "#4+290":        [186, 204.6],
+        "#4+320":        [205, 225.5],
+        "#4+350":        [225, 247.5],
+        "#5+230+830":    [70, 77],
+        "#5+230+611":    [51, 56.1],
+        "#5+250":        [109, 119],
+        "#5+300+830":    [91, 100.1],
+        "#5+300+591":    [65, 71.5],
+        "#5+300":        [153, 168.3],
+        "#6+200+XL":     [35, 38.5],
+        "#6+200+L":      [34, 37.4],
+        "#6+200+X":      [21, 23.1],
+        "#6+240+DRIVE":  [125, 137.5],
+        "#6+240+L":      [65, 71.5],
+        "#6+240+X":      [45, 49.5],
+        "#6+255+XL":     [48, 52.8],
+        "#6+255+L":      [45, 49.5],
+        "#6+255+X":      [32, 35.2],
+        "#6+265+DRIVE":  [130, 143],
+        "#6+295+DRIVE":  [155, 170.5],
+        "#6+295+XL":     [100, 110],
+        "#6+295+L":      [75, 82.5],
+        "#6+295+X":      [53, 58.3],
+        "#7+230+783":    [66, 72.6],
+        "#7+230+1045":   [88, 96.8],
+        "#7+230+555":    [46, 50.6],
+        "#7+275+771":    [77, 84.7],
+        "#7+275+1035":   [104, 114.4],
+        "#7+275+790":    [79, 86.9],
+        "#7+275+545":    [55, 60.5],
+        "#7+290+771":    [82, 90.2],
+        "#7+290+925":    [99, 108.9],
+        "#7+290+788":    [69, 75.9],
+        "#7+290+652":    [45, 50],
+    };
+
+    // 配對函式：把 title 跟 keyword 組做比對
+    function matchAnnealingKeyword(title) {
+        const titleUpper = title.toUpperCase().replace(/\s/g, '');
+        for (const [keyStr, vals] of Object.entries(ANNEALING_TABLE)) {
+            const parts = keyStr.split('+');
+            // title 必須包含 keyword 的每個 part（去掉括號後比對）
+            const allMatch = parts.every(p => {
+                const clean = p.replace(/[()（）]/g, '');
+                return titleUpper.includes(clean);
+            });
+            if (allMatch) return { key: keyStr, wire: vals[0], flux: vals[1] };
+        }
+        return null;
+    }
+
+    // 主計算函式
+    window.openWeightModal = function(bodyGroupsEncoded, journalGroupsEncoded) {
+        const bodyGroups = JSON.parse(bodyGroupsEncoded.replace(/&quot;/g, '"'));
+        const journalGroups = JSON.parse(journalGroupsEncoded.replace(/&quot;/g, '"'));
+
+        document.getElementById("weightModal").style.display = "flex";
+        document.getElementById("weightLoading").style.display = "block";
+        document.getElementById("weightResult").style.display = "none";
+        document.getElementById("weightNoData").style.display = "none";
+
+        const hasBody = bodyGroups && bodyGroups.length > 0;
+        const hasJournal = journalGroups && journalGroups.length > 0;
+
+        if (!hasBody && !hasJournal) {
+            document.getElementById("weightLoading").style.display = "none";
+            document.getElementById("weightNoData").style.display = "block";
+            return;
+        }
+
+        // === 本體銲補計算 ===
+        let bodyWireTotal = 0, bodyFluxTotal = 0;
+        let bodyRowsHtml = '';
+
+        if (hasBody) {
+            bodyGroups.forEach(group => {
+                const match = matchAnnealingKeyword(group.title);
+                const pc = group.target_pc || 0;
+
+                if (match) {
+                    const wire = (pc * match.wire).toFixed(1);
+                    const flux = (pc * match.flux).toFixed(1);
+                    bodyWireTotal += pc * match.wire;
+                    bodyFluxTotal += pc * match.flux;
+                    bodyRowsHtml += `
+                        <tr>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; color: #1565c0; font-weight: bold;">${group.title}</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${pc}</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${wire}</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${flux}</td>
+                        </tr>`;
+                } else {
+                    bodyRowsHtml += `
+                        <tr>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; color: #aaa;">${group.title}</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">${pc}</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">—</td>
+                            <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center; color:#aaa;">—</td>
+                        </tr>`;
+                }
+            });
+            document.getElementById("weightBodyRows").innerHTML = bodyRowsHtml;
+            document.getElementById("weightBodyTotal").innerHTML =
+                `本體合計：銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#c62828;">${bodyFluxTotal.toFixed(1)} kg</span>`;
+            document.getElementById("weightBodySection").style.display = "block";
+        } else {
+            document.getElementById("weightBodySection").style.display = "none";
+        }
+
+        // === 軸頸銲補計算 ===
+        let journalWireTotal = 0, journalFluxTotal = 0;
+        let journalRowsHtml = '';
+
+        if (hasJournal) {
+            journalGroups.forEach(group => {
+                const pc = group.target_pc || 0;
+                const wire = (pc * 10).toFixed(1);
+                const flux = (pc * 11).toFixed(1);
+                journalWireTotal += pc * 10;
+                journalFluxTotal += pc * 11;
+                journalRowsHtml += `
+                    <tr>
+                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee;">${group.title}</td>
+                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${pc}</td>
+                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${wire}</td>
+                        <td style="padding: 7px 10px; border-bottom: 1px solid #eee; text-align:center;">${flux}</td>
+                    </tr>`;
+            });
+            document.getElementById("weightJournalRows").innerHTML = journalRowsHtml;
+            document.getElementById("weightJournalTotal").innerHTML =
+                `軸頸合計：銲線 <span style="color:#1565c0;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1565c0;">${journalFluxTotal.toFixed(1)} kg</span>`;
+            document.getElementById("weightJournalSection").style.display = "block";
+        } else {
+            document.getElementById("weightJournalSection").style.display = "none";
+        }
+
+        document.getElementById("weightLoading").style.display = "none";
+        document.getElementById("weightResult").style.display = "block";
     }
 
     // 🔥 核心：反向檢索與排序演算法
