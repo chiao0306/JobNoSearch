@@ -904,10 +904,9 @@
                 }
             });
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
-            // 恢復原本的三行，只針對中間的合計加上較大的字體與微調間距
             document.getElementById("weightBodyTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
-                `<div style="font-size: 17px; font-weight: 900; letter-spacing: 0.5px; margin: 6px 0;">合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span></div>` +
+                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span><br>` +
                 `減半用量　銲線 <span style="color:#c62828;">${(bodyWireTotal / 2).toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${(bodyFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightBodySection").style.display = "block";
         } else {
@@ -929,10 +928,9 @@
                 journalHtml += makeJournalCard(group.title, pc, wire, flux);
             });
             document.getElementById("weightJournalRows").innerHTML = journalHtml;
-            // 恢復原本的三行，只針對中間的合計加上較大的字體與微調間距
             document.getElementById("weightJournalTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${journalPcTotal} PC</span><br>` +
-                `<div style="font-size: 17px; font-weight: 900; letter-spacing: 0.5px; margin: 6px 0;">合計　　銲線 <span style="color:#e65100;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${journalFluxTotal.toFixed(1)} kg</span></div>` +
+                `合計　　銲線 <span style="color:#e65100;">${journalWireTotal.toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${journalFluxTotal.toFixed(1)} kg</span><br>` +
                 `減半用量　銲線 <span style="color:#e65100;">${(journalWireTotal / 2).toFixed(1)} kg</span> ／ 銲粉 <span style="color:#1b5e20;">${(journalFluxTotal / 2).toFixed(1)} kg</span>`;
             document.getElementById("weightJournalSection").style.display = "block";
         } else {
