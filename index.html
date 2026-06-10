@@ -562,7 +562,9 @@
                 }
                 
                 // 👇 判斷是否有本體銲補或軸頸銲補的紀錄 (升級為項目分類與自動計數版)
-                const bodyWeldGroups = data.target_annealing_ids || [];   // 結構: [{title: '...', ids: [...]}]
+                
+                // 【修改這裡】將 target_annealing_ids 改成 body_weld_ids
+                const bodyWeldGroups = data.body_weld_ids || [];   // 結構: [{title: '...', ids: [...]}]
                 const journalWeldGroups = data.journal_weld_ids || [];   // 結構: [{title: '...', ids: [...]}]
                 
                 // 1. 動態加總算出一共有幾個不重複的編號
