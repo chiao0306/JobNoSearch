@@ -261,6 +261,29 @@
         tr.main-row.grouped-bg-main:hover { background-color: #FBE6D2; }
         .details-content.grouped-bg-main { background-color: #FFF3E8; }
         
+        /* 🧮 比例按鈕預設：淡色底、字體稍淡 */
+        .multiplier-btn {
+            background-color: #f0f0f0;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 4px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        /* 滑鼠移過去稍微變色 */
+        .multiplier-btn:hover {
+            background-color: #e0e0e0;
+        }
+        /* 🔥 比例按鈕點擊後 (Active狀態)：深色底、白字，對比度拉高 */
+        .multiplier-btn.active {
+            background-color: #d84315; /* 配合你橘色主題的深橘紅色 */
+            color: white;
+            border-color: #d84315;
+            font-weight: bold;
+        }
+        
     </style>
 </head>
 <body>
@@ -838,13 +861,20 @@
         return null;
     }
     
-    // 動態計算本體銲補的比例用量
-    window.calcBodyWeight = function(wireTotal, fluxTotal, multiplier) {
+    // 動態計算本體銲補的比例用量 (含按鈕顏色連動)
+    window.calcBodyWeight = function(btnElement, wireTotal, fluxTotal, multiplier) {
+        // 1. 先把所有比例按鈕的「active(深色)」狀態移除，變回淡色
+        const allBtns = document.querySelectorAll('.multiplier-btn');
+        allBtns.forEach(btn => btn.classList.remove('active'));
+        
+        // 2. 只把目前點擊的這個按鈕加上「active(深色)」狀態
+        btnElement.classList.add('active');
+
+        // 3. 執行計算與顯示
         const resultDiv = document.getElementById("dynamicWeightResult");
         const wire = (wireTotal * multiplier).toFixed(1);
         const flux = (fluxTotal * multiplier).toFixed(1);
         
-        // 寫入計算結果，並把 display 改為 block 來撐開外層的橘色區塊
         resultDiv.innerHTML = `比例 ${multiplier} 用量　銲線 <span style="color:#c62828;">${wire} kg</span> ／ 銲藥 <span style="color:#880e4f;">${flux} kg</span>`;
         resultDiv.style.display = "block";
     }
@@ -923,14 +953,15 @@
             });
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
             
+            // 👇 修改這三行按鈕即可
             document.getElementById("weightBodyTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
                 `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span>` +
                 `<div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">` +
                     `<span style="color:#d84315; font-size:13px;">快速換算：</span>` +
-                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
-                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
-                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
+                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
+                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
+                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
                 `</div>` +
                 `<div id="dynamicWeightResult" style="display: none; margin-top: 8px; border-top: 1px dashed #ffcc80; padding-top: 8px;"></div>`;
 
