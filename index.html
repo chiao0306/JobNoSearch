@@ -865,22 +865,31 @@
         return null;
     }
     
-    // 動態計算本體銲補的比例用量 (含按鈕顏色連動)
+    // 動態計算本體銲補的比例用量 (含按鈕顏色連動與開關切換)
     window.calcBodyWeight = function(btnElement, wireTotal, fluxTotal, multiplier) {
-        // 1. 先把所有比例按鈕的「active(深色)」狀態移除，變回淡色
+        const resultDiv = document.getElementById("dynamicWeightResult");
+        
+        // 1. 先記住「現在點擊的這個按鈕，原本是不是已經在深色(開啟)狀態？」
+        const isAlreadyActive = btnElement.classList.contains('active');
+        
+        // 2. 把畫面上所有比例按鈕的「active(深色)」狀態通通清掉，恢復成淡色
         const allBtns = document.querySelectorAll('.multiplier-btn');
         allBtns.forEach(btn => btn.classList.remove('active'));
         
-        // 2. 只把目前點擊的這個按鈕加上「active(深色)」狀態
-        btnElement.classList.add('active');
-
-        // 3. 執行計算與顯示
-        const resultDiv = document.getElementById("dynamicWeightResult");
-        const wire = (wireTotal * multiplier).toFixed(1);
-        const flux = (fluxTotal * multiplier).toFixed(1);
-        
-        resultDiv.innerHTML = `比例 ${multiplier} 用量　銲線 <span style="color:#c62828;">${wire} kg</span> ／ 銲藥 <span style="color:#880e4f;">${flux} kg</span>`;
-        resultDiv.style.display = "block";
+        // 3. 判斷要做「關閉收起」還是「計算展開」
+        if (isAlreadyActive) {
+            // 💡 如果原本就是開啟的，就只要把下方的結果隱藏起來即可 (像關掉電風扇)
+            resultDiv.style.display = "none";
+        } else {
+            // 💡 如果原本是關閉的，就把按下的這個按鈕變深色，並進行計算顯示
+            btnElement.classList.add('active');
+            
+            const wire = (wireTotal * multiplier).toFixed(1);
+            const flux = (fluxTotal * multiplier).toFixed(1);
+            
+            resultDiv.innerHTML = `比例 ${multiplier} 用量　銲線 <span style="color:#c62828;">${wire} kg</span> ／ 銲藥 <span style="color:#880e4f;">${flux} kg</span>`;
+            resultDiv.style.display = "block";
+        }
     }
 
     // 主計算函式 (重量計算)
