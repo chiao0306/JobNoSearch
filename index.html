@@ -261,28 +261,32 @@
         tr.main-row.grouped-bg-main:hover { background-color: #FBE6D2; }
         .details-content.grouped-bg-main { background-color: #FFF3E8; }
         
-        /* 🧮 比例按鈕預設：淡色底、字體稍淡 */
+        /* 🧮 比例按鈕預設：乾淨俐落版 */
         .multiplier-btn {
             background-color: #f0f0f0;
             color: #666;
             border: 1px solid #ddd;
-            /* 👇 把原來的 padding: 4px 12px; 改成這樣，按鈕就會變短 */
-            padding: 4px 8px; 
+            padding: 4px 8px;
             font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            /* 👇 讓按鈕平分剩下的空間，看起來會更整齊 */
-            flex: 1; 
+            flex: 1;
+            /* 👇 殺掉 0.2 秒的動畫，改為無延遲 */
+            /* transition: all 0.2s ease; (已刪除) */
+            /* 👇 消除 iOS 按下去時自帶的灰色閃爍方塊 */
+            -webkit-tap-highlight-color: transparent; 
         }
 
-        /* 滑鼠移過去稍微變色 */
-        .multiplier-btn:hover {
-            background-color: #e0e0e0;
+        /* 💻 限制只有「支援滑鼠的裝置」才會有 Hover 效果，避免手機點擊後卡殘影 */
+        @media (hover: hover) {
+            .multiplier-btn:hover {
+                background-color: #e0e0e0;
+            }
         }
-        /* 🔥 比例按鈕點擊後 (Active狀態)：深色底、白字，對比度拉高 */
+
+        /* 🔥 比例按鈕點擊後 (Active狀態) */
         .multiplier-btn.active {
-            background-color: #d84315; /* 配合你橘色主題的深橘紅色 */
+            background-color: #d84315; 
             color: white;
             border-color: #d84315;
             font-weight: bold;
