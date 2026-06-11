@@ -837,6 +837,17 @@
         }
         return null;
     }
+    
+    // 動態計算本體銲補的比例用量
+    window.calcBodyWeight = function(wireTotal, fluxTotal, multiplier) {
+        const resultDiv = document.getElementById("dynamicWeightResult");
+        const wire = (wireTotal * multiplier).toFixed(1);
+        const flux = (fluxTotal * multiplier).toFixed(1);
+        
+        // 寫入計算結果，並把 display 改為 block 來撐開外層的橘色區塊
+        resultDiv.innerHTML = `比例 ${multiplier} 用量　銲線 <span style="color:#c62828;">${wire} kg</span> ／ 銲藥 <span style="color:#880e4f;">${flux} kg</span>`;
+        resultDiv.style.display = "block";
+    }
 
     // 主計算函式 (重量計算)
     window.openWeightModal = function(bodyGroupsEncoded, journalGroupsEncoded) {
@@ -911,10 +922,18 @@
                 }
             });
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
+            
             document.getElementById("weightBodyTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
-                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span><br>` +
-                `減半用量　銲線 <span style="color:#c62828;">${(bodyWireTotal / 2).toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${(bodyFluxTotal / 2).toFixed(1)} kg</span>`;
+                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span>` +
+                `<div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">` +
+                    `<span style="color:#d84315; font-size:13px;">快速換算：</span>` +
+                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
+                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
+                    `<button class="secondary" style="padding: 4px 12px; font-size: 13px; width: auto;" onclick="calcBodyWeight(${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
+                `</div>` +
+                `<div id="dynamicWeightResult" style="display: none; margin-top: 8px; border-top: 1px dashed #ffcc80; padding-top: 8px;"></div>`;
+
             document.getElementById("weightBodySection").style.display = "block";
         } else {
             document.getElementById("weightBodySection").style.display = "none";
