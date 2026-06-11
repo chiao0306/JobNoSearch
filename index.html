@@ -266,12 +266,16 @@
             background-color: #f0f0f0;
             color: #666;
             border: 1px solid #ddd;
-            padding: 4px 12px;
+            /* 👇 把原來的 padding: 4px 12px; 改成這樣，按鈕就會變短 */
+            padding: 4px 8px; 
             font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            /* 👇 讓按鈕平分剩下的空間，看起來會更整齊 */
+            flex: 1; 
         }
+
         /* 滑鼠移過去稍微變色 */
         .multiplier-btn:hover {
             background-color: #e0e0e0;
@@ -953,12 +957,11 @@
             });
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
             
-            // 👇 修改這三行按鈕即可
             document.getElementById("weightBodyTotal").innerHTML =
                 `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
                 `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span>` +
-                `<div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">` +
-                    `<span style="color:#d84315; font-size:13px;">快速換算：</span>` +
+                `<div style="margin-top: 8px; display: flex; gap: 6px; align-items: center;">` +
+                    `<span style="color:#d84315; font-size:13px; font-weight:bold; white-space: nowrap; flex-shrink: 0;">快速換算：</span>` +
                     `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
                     `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
                     `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
