@@ -271,14 +271,11 @@
             .search-box { flex-direction: column; gap: 10px; align-items: stretch; }
             .btn-group { flex-direction: row; }
             .filter-content { flex-direction: column; align-items: stretch; gap: 10px; }
-            .container { padding: 10px; border-radius: 0; box-shadow: none; } /* 微調外框內距 */
+            .container { padding: 10px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
             
-            /* 👇 新增這段：強制縮減手機版表格與明細內的左右內距，避免撐出畫面外 */
-            th, td { padding: 10px 8px; font-size: 15px; } 
-            th.status-col, td.status-col { padding-right: 8px; min-width: auto; }
-            th.date-col, td.date-col { padding-left: 8px; }
-            th.job-col, td.job-col { padding-left: 5px; padding-right: 5px; }
+            /* 👇 手機版只要縮小字體跟微調內距就好，不要再動 padding-left/right */
+            th, td { font-size: 15px; padding: 10px 2px; } 
             .details-content { padding: 10px 8px; }
         }
         
