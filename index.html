@@ -197,6 +197,7 @@
         .status-pass { color: #28a745; font-weight: bold; }
         .status-fail { color: #dc3545; font-weight: bold; }
         
+        /* 📋 替換原本的 issue-card，並加入摺疊相關設計 */
         .issue-card { 
             background: white; 
             border-left: 4px solid #dc3545; 
@@ -204,15 +205,52 @@
             margin-bottom: 8px; 
             border-radius: 4px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer; /* 滑鼠移過去變手指，提示可點擊 */
+            position: relative;
+            transition: background-color 0.2s;
         }
+        .issue-card:hover { background-color: #fdfdfd; }
         
         .issue-card, .issue-card strong, .issue-desc, .issue-list, .issue-list li {
             font-size: 14px;
             line-height: 1.5;
         }
+        
+        /* 新增：卡片標題區塊與內容區塊 */
+        .issue-card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .issue-card-body {
+            display: none; /* 預設隱藏內容 */
+            padding-top: 8px; margin-top: 8px; border-top: 1px dashed #eee;
+        }
+        /* 展開時顯示內容 */
+        .issue-card.expanded .issue-card-body { display: block; }
+
+        /* 新增：卡片底部「隱約還有內容」的圓點視覺提示 */
+        .issue-card::after {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 4px;
+            background: radial-gradient(circle, #ccc 2px, transparent 2px);
+            background-size: 8px 4px;
+            margin: 6px auto 0 auto;
+            opacity: 0.7;
+        }
+        .issue-card.expanded::after { display: none; /* 展開後隱藏提示點點 */ }
 
         .issue-desc { margin: 6px 0; color: #444; }
         .issue-list { margin: 4px 0; padding-left: 20px; }
+
+        /* 新增：展開/收合全部 按鈕區塊 */
+        .issue-toggle-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+        .mini-toggle-btn {
+            background-color: #f4f4f9; color: #555; border: 1px solid #ccc;
+            padding: 4px 10px; font-size: 13px; border-radius: 4px; cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .mini-toggle-btn:hover { background-color: #e9ecef; }
 
         /* 📱 手機版專屬樣式 */
         @media (max-width: 600px) {
@@ -580,13 +618,25 @@
                 if (issues.length === 0) {
                     detailsHtml += '<p class="issue-desc">✅ 系統判定全數合格，無異常紀錄。</p>';
                 } else {
+                    // 加入「展開全部」與「收合全部」的小按鈕
+                    detailsHtml += `
+                        <div class="issue-toggle-btns">
+                            <button class="mini-toggle-btn" onclick="event.stopPropagation(); toggleAllIssues('${docId}', true)">📂 展開全部</button>
+                            <button class="mini-toggle-btn" onclick="event.stopPropagation(); toggleAllIssues('${docId}', false)">📁 收合全部</button>
+                        </div>
+                    `;
                     issues.forEach(issue => {
                         let failureTable = issue.failures ? issue.failures.map(f => `<li style="margin-bottom:2px;"><b>${f.id}:</b> ${f.val} <br><span style="color:#666; font-size:0.9em;">(基準: ${f.calc || f.target})</span></li>`).join('') : '';
                         detailsHtml += `
-                            <div class="issue-card">
-                                <strong>${issue.issue_type} - ${issue.item} <span style="color:#666; font-weight:normal;">(P.${issue.page})</span></strong>
-                                <p class="issue-desc">${issue.common_reason}</p>
-                                <ul class="issue-list">${failureTable}</ul>
+                            <div class="issue-card" onclick="event.stopPropagation(); toggleIssueCard(this)">
+                                <div class="issue-card-header">
+                                    <strong>${issue.issue_type} - ${issue.item} <span style="color:#666; font-weight:normal;">(P.${issue.page})</span></strong>
+                                    <span class="toggle-icon" style="color:#999; font-size:12px;">▼</span>
+                                </div>
+                                <div class="issue-card-body">
+                                    <p class="issue-desc">${issue.common_reason}</p>
+                                    <ul class="issue-list">${failureTable}</ul>
+                                </div>
                             </div>
                         `;
                     });
@@ -1150,6 +1200,38 @@
         }
         
         window.renderRecords(); 
+    }
+    
+    // ===== 異常項目摺疊控制邏輯 =====
+    
+    // 單一卡片點擊切換
+    window.toggleIssueCard = function(element) {
+        element.classList.toggle('expanded');
+        const icon = element.querySelector('.toggle-icon');
+        if (element.classList.contains('expanded')) {
+            icon.innerText = '▲';
+        } else {
+            icon.innerText = '▼';
+        }
+    }
+
+    // 全域展開/收合
+    window.toggleAllIssues = function(docId, expand) {
+        const detailRow = document.getElementById(`details-${docId}`);
+        if (!detailRow) return;
+        
+        // 找出該筆工令下的所有異常卡片
+        const cards = detailRow.querySelectorAll('.issue-card');
+        cards.forEach(card => {
+            const icon = card.querySelector('.toggle-icon');
+            if (expand) {
+                card.classList.add('expanded');
+                if(icon) icon.innerText = '▲';
+            } else {
+                card.classList.remove('expanded');
+                if(icon) icon.innerText = '▼';
+            }
+        });
     }
     
     window.onload = () => window.searchLogs(true);
