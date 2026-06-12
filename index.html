@@ -6,6 +6,13 @@
     <title>工令稽核查詢系統</title>
     
     <style>
+        /* 🔪 解決手機版往左滑會破圖的問題 */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+ 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             padding: 15px; 
@@ -145,47 +152,45 @@
         /* 📊 表格外層包裝 */
         .table-wrapper {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
             border-radius: 8px;
             border: 1px solid #eee;
+            overflow: hidden; /* 確保不會有東西滿出外框 */
         }
         
-        /* 💡 修正點：加入 fixed 強制固定欄寬，不被文字長短干擾 */
+        /* 💡 強制固定欄寬，版面絕對平穩 */
         table { 
             width: 100%; 
             table-layout: fixed; 
             border-collapse: collapse; 
         } 
         
-        th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 16px; }
+        /* 統一設定儲存格，全面置中 */
+        th, td { 
+            border-bottom: 1px solid #eee; 
+            padding: 10px 4px; /* 縮小 Padding 避免擠壓文字 */
+            text-align: center; 
+            font-size: 16px; 
+            box-sizing: border-box; /* 確保 Padding 不會增加總寬度 */
+            word-wrap: break-word; /* 防止長字串撐破畫面 */
+        }
+        
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
         
-        /* 📐 欄位寬度與對齊微調 */
+        /* 📐 欄位寬度乾淨比例分配 (完全移除左右不對稱的留白) */
         th.date-col, td.date-col { 
-            width: 25%; /* 👈 調整為 25% */
-            white-space: nowrap; 
-            text-align: center; 
-            padding-left: 15px; /* 👈 改用固定像素留白，安全又穩定 */
-            padding-right: 5px; 
+            width: 28%; 
         }
         
         th.job-col, td.job-col { 
-            width: 50%; /* 👈 維持 50%，給工令號碼最大的舞台 */
-            white-space: nowrap; 
-            text-align: center; 
-            padding: 10px 5px; 
+            width: 44%; 
             font-size: 16px; 
         }
         
         th.status-col, td.status-col { 
-            width: 25%; /* 👈 調整為 25%，加總剛好 100% */
-            white-space: nowrap;  
-            text-align: center; 
-            padding-right: 15px; /* 👈 改用固定像素留白 */
-            padding-left: 5px; 
+            width: 28%; 
         }
 
         .time-text { color: #777; font-size: 0.9em; }
