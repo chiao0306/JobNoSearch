@@ -175,7 +175,13 @@
             word-wrap: break-word; /* 防止長字串撐破畫面 */
         }
         
-        th { background-color: #f8f9fa; color: #555; font-weight: 600; }
+        /* 統一鎖死表頭標題的字體大小，不被底下的內容影響 */
+        th { 
+            background-color: #f8f9fa; 
+            color: #555; 
+            font-weight: 600; 
+            font-size: 15px !important; /* 👈 加入這行，強制標題大小一致 */
+        }
         tr.main-row { cursor: pointer; transition: background-color 0.2s; }
         tr.main-row:hover { background-color: #fdf0f0; }
         
