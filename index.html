@@ -205,9 +205,11 @@
             margin-bottom: 8px; 
             border-radius: 4px; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            cursor: pointer; /* 滑鼠移過去變手指，提示可點擊 */
+            cursor: pointer;
             position: relative;
             transition: background-color 0.2s;
+            box-sizing: border-box; /* 👈 新增：確保內距不會撐大卡片寬度 */
+            width: 100%;
         }
         .issue-card:hover { background-color: #fdfdfd; }
         
@@ -216,39 +218,41 @@
             line-height: 1.5;
         }
         
-        /* 新增：卡片標題區塊與內容區塊 */
         .issue-card-header {
             display: flex; justify-content: space-between; align-items: flex-start;
         }
         .issue-card-body {
-            display: none; /* 預設隱藏內容 */
+            display: none;
             padding-top: 8px; margin-top: 8px; border-top: 1px dashed #eee;
         }
-        /* 展開時顯示內容 */
         .issue-card.expanded .issue-card-body { display: block; }
 
-        /* 新增：卡片底部「隱約還有內容」的圓點視覺提示 */
+        /* 🌟 修正：改成素雅的淡灰色小短線 */
         .issue-card::after {
             content: '';
             display: block;
-            width: 24px;
+            width: 32px;
             height: 4px;
-            background: radial-gradient(circle, #ccc 2px, transparent 2px);
-            background-size: 8px 4px;
-            margin: 6px auto 0 auto;
-            opacity: 0.7;
+            background-color: #e5e5e5;
+            border-radius: 2px;
+            margin: 8px auto 2px auto;
         }
-        .issue-card.expanded::after { display: none; /* 展開後隱藏提示點點 */ }
+        .issue-card.expanded::after { display: none; }
 
         .issue-desc { margin: 6px 0; color: #444; }
         .issue-list { margin: 4px 0; padding-left: 20px; }
 
-        /* 新增：展開/收合全部 按鈕區塊 */
-        .issue-toggle-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+        /* 🌟 修正：展開/收合全部 按鈕區塊優化排版 */
+        .issue-toggle-btns { 
+            display: flex; gap: 8px; margin-bottom: 10px; 
+            width: 100%; box-sizing: border-box; 
+        }
         .mini-toggle-btn {
+            flex: 1; /* 👈 新增：讓兩顆按鈕平分寬度，對齊更美觀 */
             background-color: #f4f4f9; color: #555; border: 1px solid #ccc;
-            padding: 4px 10px; font-size: 13px; border-radius: 4px; cursor: pointer;
+            padding: 6px 10px; font-size: 13px; border-radius: 6px; cursor: pointer;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            -webkit-tap-highlight-color: transparent;
         }
         .mini-toggle-btn:hover { background-color: #e9ecef; }
 
@@ -257,8 +261,15 @@
             .search-box { flex-direction: column; gap: 10px; align-items: stretch; }
             .btn-group { flex-direction: row; }
             .filter-content { flex-direction: column; align-items: stretch; gap: 10px; }
-            .container { padding: 15px; border-radius: 0; box-shadow: none; }
+            .container { padding: 10px; border-radius: 0; box-shadow: none; } /* 微調外框內距 */
             body { padding: 0; }
+            
+            /* 👇 新增這段：強制縮減手機版表格與明細內的左右內距，避免撐出畫面外 */
+            th, td { padding: 10px 8px; font-size: 15px; } 
+            th.status-col, td.status-col { padding-right: 8px; min-width: auto; }
+            th.date-col, td.date-col { padding-left: 8px; }
+            th.job-col, td.job-col { padding-left: 5px; padding-right: 5px; }
+            .details-content { padding: 10px 8px; }
         }
         
         /* 彈出視窗樣式 (Modal) */
