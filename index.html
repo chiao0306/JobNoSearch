@@ -161,10 +161,10 @@
         
         /* 📐 欄位寬度與對齊微調 */
         th.date-col, td.date-col { 
-            width: 30%; 
+            width: 25%; 
             white-space: nowrap; 
             text-align: center; 
-            padding-left: 10%; /* 👈 加入這行，強制左側內部留白 10% */
+            padding-left: 5%; /* 👈 加入這行，強制左側內部留白 10% */
             padding-right: 5px; /* 把原本的寫法覆蓋即可 */
         }
         
@@ -177,10 +177,11 @@
         }
         
         th.status-col, td.status-col { 
-            width: 30%; /* 分配均勻的寬度比例 */
+            width: 25%; 
             white-space: nowrap;  
-            text-align: center; /* 稽核結果強制置中 */
-            padding: 10px 5px; 
+            text-align: center; 
+            padding-right: 5%; /* 👈 強制右側內部留白 10% */
+            padding-left: 5px; /* 把原本的寫法覆蓋即可 */
         }
 
         .time-text { color: #777; font-size: 0.9em; }
