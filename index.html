@@ -151,8 +151,12 @@
             border: 1px solid #eee;
         }
         
-        /* 💡 修正點：移除了 min-width: 650px，解決手機版多餘的橫向滑動空間 */
-        table { width: 100%; border-collapse: collapse; } 
+        /* 💡 修正點：加入 fixed 強制固定欄寬，不被文字長短干擾 */
+        table { 
+            width: 100%; 
+            table-layout: fixed; 
+            border-collapse: collapse; 
+        } 
         
         th, td { border-bottom: 1px solid #eee; padding: 10px 12px; text-align: left; font-size: 16px; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; }
@@ -161,27 +165,27 @@
         
         /* 📐 欄位寬度與對齊微調 */
         th.date-col, td.date-col { 
-            width: 30%; 
+            width: 25%; /* 👈 調整為 25% */
             white-space: nowrap; 
             text-align: center; 
-            padding-left: 10%; /* 👈 加入這行，強制左側內部留白 10% */
-            padding-right: 5px; /* 把原本的寫法覆蓋即可 */
+            padding-left: 15px; /* 👈 改用固定像素留白，安全又穩定 */
+            padding-right: 5px; 
         }
         
         th.job-col, td.job-col { 
-            width: 50%; /* 工令號碼字串比較長，給稍微多一點點空間 */
+            width: 50%; /* 👈 維持 50%，給工令號碼最大的舞台 */
             white-space: nowrap; 
-            text-align: center; /* 工令強制置中 */
+            text-align: center; 
             padding: 10px 5px; 
             font-size: 16px; 
         }
         
         th.status-col, td.status-col { 
-            width: 30%; 
+            width: 25%; /* 👈 調整為 25%，加總剛好 100% */
             white-space: nowrap;  
             text-align: center; 
-            padding-right: 10%; /* 👈 強制右側內部留白 10% */
-            padding-left: 5px; /* 把原本的寫法覆蓋即可 */
+            padding-right: 15px; /* 👈 改用固定像素留白 */
+            padding-left: 5px; 
         }
 
         .time-text { color: #777; font-size: 0.9em; }
