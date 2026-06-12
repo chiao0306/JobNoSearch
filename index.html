@@ -161,26 +161,25 @@
         
         /* 📐 欄位寬度與對齊微調 */
         th.date-col, td.date-col { 
-            width: 1%; white-space: nowrap; text-align: center; 
-            padding-left: 20px; 
-            padding-right: 15px;
+            width: 30%; /* 分配均勻的寬度比例 */
+            white-space: nowrap; 
+            text-align: center; /* 日期強制置中 */
+            padding: 10px 5px; 
         }
         
         th.job-col, td.job-col { 
-            width: 1%; 
+            width: 40%; /* 工令號碼字串比較長，給稍微多一點點空間 */
             white-space: nowrap; 
-            text-align: center; /* 👈 新增：強制文字置中 */
-            padding-left: 10px; /* 👈 修改：讓左右留白對稱 */
-            padding-right: 10px; 
-            font-size: 16px; /* 👈 新增這一行來單獨放大工令號碼 */
+            text-align: center; /* 工令強制置中 */
+            padding: 10px 5px; 
+            font-size: 16px; 
         }
         
         th.status-col, td.status-col { 
-            width: auto; 
-            padding-left: 10px; 
-            padding-right: 25px; 
-            white-space: nowrap;  /* 👈 新增：強制文字不斷行 */
-            min-width: 120px;     /* 👈 新增：給予基本寬度，確保「🔴 異常 (100 項)」放得下 */
+            width: 30%; /* 分配均勻的寬度比例 */
+            white-space: nowrap;  
+            text-align: center; /* 稽核結果強制置中 */
+            padding: 10px 5px; 
         }
 
         .time-text { color: #777; font-size: 0.9em; }
