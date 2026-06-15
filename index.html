@@ -343,13 +343,17 @@
         /* 🗂️ 依工令群組排序的交錯底色 (焦糖拿鐵) */
         /* 深色組：焦糖奶茶色 */
         tr.main-row.grouped-bg-alt { background-color: #FDE3C8; } 
-        tr.main-row.grouped-bg-alt:hover { background-color: #F5D2B0; }
         .details-content.grouped-bg-alt { background-color: #FDE3C8; }
-
+        
         /* 淺色組：奶油米黃 */
         tr.main-row.grouped-bg-main { background-color: #FFF3E8; } 
-        tr.main-row.grouped-bg-main:hover { background-color: #FBE6D2; }
         .details-content.grouped-bg-main { background-color: #FFF3E8; }
+        
+        /* 👇 新增這段：把 Hover 變色限制在「有滑鼠」的電腦版上，手機版就不會卡色了 */
+        @media (hover: hover) {
+            tr.main-row.grouped-bg-alt:hover { background-color: #F5D2B0; }
+            tr.main-row.grouped-bg-main:hover { background-color: #FBE6D2; }
+        }
         
         /* 🧮 比例按鈕預設：乾淨俐落版 */
         .multiplier-btn {
