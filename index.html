@@ -182,8 +182,17 @@
             font-weight: 600; 
             font-size: 15px !important; /* 👈 加入這行，強制標題大小一致 */
         }
-        tr.main-row { cursor: pointer; transition: background-color 0.2s; }
-        tr.main-row:hover { background-color: #fdf0f0; }
+        
+        tr.main-row { 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            -webkit-tap-highlight-color: transparent; /* 消除手機點擊閃爍 */
+        }
+        
+        /* 移除變色，改用按壓微縮回饋，避免干擾底色 */
+        tr.main-row:active td {
+            transform: scale(0.99);
+        }
         
         /* 📐 欄位寬度乾淨比例分配 (完全移除左右不對稱的留白) */
         th.date-col, td.date-col { 
