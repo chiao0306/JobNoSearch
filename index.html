@@ -216,7 +216,7 @@
         .status-pass { color: #28a745; font-weight: bold; }
         .status-fail { color: #dc3545; font-weight: bold; }
         
-        /* 📋 替換原本的 issue-card，並加入摺疊相關設計 */
+        /* 1. 更新原本的 issue-card 基礎設定 */
         .issue-card { 
             background: white; 
             border-left: 4px solid #dc3545; 
@@ -226,12 +226,28 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             cursor: pointer;
             position: relative;
-            transition: background-color 0.2s;
-            box-sizing: border-box; /* 👈 新增：確保內距不會撐大卡片寬度 */
+            box-sizing: border-box; 
             width: 100%;
+            
+            /* 👇 修改與新增這兩行 */
+            transition: all 0.2s ease; /* 讓所有變化（包含陰影和位移）都平滑 */
+            -webkit-tap-highlight-color: transparent; /* 消除手機點擊時的預設灰色閃爍方塊 */
         }
-        .issue-card:hover { background-color: #fdfdfd; }
         
+        /* 2. 僅在支援滑鼠的裝置上啟用「懸浮上浮 + 陰影加深」效果 */
+        @media (hover: hover) {
+            .issue-card:hover { 
+                transform: translateY(-2px); /* 卡片微幅往上浮 */
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 陰影範圍擴大且加深 */
+            }
+        }
+        
+        /* 3. 手機與電腦通用：點擊按壓瞬間的「微縮物理回饋」 */
+        .issue-card:active {
+            transform: scale(0.99); /* 模擬真實按鈕被壓下去的感覺 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* 陰影縮小 */
+        }
+
         .issue-card, .issue-card strong, .issue-desc, .issue-list, .issue-list li {
             font-size: 14px;
             line-height: 1.5;
