@@ -1026,10 +1026,15 @@
         }
 
         // 卡片樣式helper
-        function makeCard(title, pc, wireVal, fluxVal, matched) {
-            if (matched) {
+        function makeCard(title, pc, wireVal, fluxVal, matchedKey) {
+            if (matchedKey) { // 👈 把參數改成 matchedKey 來接收配對到的字串
                 return `<div style="background:#fff; border: 1px solid #bbdefb; border-left: 4px solid #1976d2; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
-                    <div style="font-size: 13.5px; font-weight: bold; color: #1565c0; margin-bottom: 6px;">${title}</div>
+                    <div style="font-size: 13.5px; font-weight: bold; color: #1565c0; margin-bottom: 6px; line-height: 1.4;">
+                        ${title}
+                        <div style="margin-top: 4px;">
+                            <span style="display: inline-block; font-size: 11.5px; font-weight: normal; color: #555; background: #f0f0f0; border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px;">🔍 判定規則：${matchedKey}</span>
+                        </div>
+                    </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <span style="background:#e3f2fd; color:#0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">PC: ${pc}</span>
                         <span style="background:#fff3e0; color:#e65100; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight:bold;">銲線 ${wireVal} kg</span>
@@ -1069,11 +1074,14 @@
                     bodyWireTotal += pc * match.wire;
                     bodyFluxTotal += pc * match.flux;
                     bodyPcTotal += pc;
-                    bodyHtml += makeCard(group.title, pc, wire, flux, true);
+                    // 👇 修改這一行：把 true 換成 match.key
+                    bodyHtml += makeCard(group.title, pc, wire, flux, match.key);
                 } else {
-                    bodyHtml += makeCard(group.title, pc, 0, 0, false);
+                    // 👇 修改這一行：把 false 換成 null
+                    bodyHtml += makeCard(group.title, pc, 0, 0, null);
                 }
             });
+
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
             
             document.getElementById("weightBodyTotal").innerHTML =
