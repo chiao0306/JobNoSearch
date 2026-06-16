@@ -776,12 +776,9 @@
                         // 🛡️ 給退火搜尋專用的陣列去重，避免重複搜尋耗能
                         allBodyIds = [...new Set(allBodyIds)];
                         
-                        const idsJson = JSON.stringify(allBodyIds).replace(/"/g, '&quot;');
-                        
-                        // 👇 拔掉了 <br>，改成用 margin-top: 5px 微調間距
-                        // 打包本體和軸頸完整資料給計算用
-                        const bodyGroupsJson = JSON.stringify(bodyWeldGroups).replace(/"/g, '&quot;');
-                        const journalGroupsJson = JSON.stringify(journalWeldGroups).replace(/"/g, '&quot;');
+                        const idsJson = encodeURIComponent(JSON.stringify(allBodyIds));
+                        const bodyGroupsJson = encodeURIComponent(JSON.stringify(bodyWeldGroups));
+                        const journalGroupsJson = encodeURIComponent(JSON.stringify(journalWeldGroups));
                         
                         searchBtnHtml = `
                             <div style="margin-top: 5px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -1008,8 +1005,8 @@
         document.body.style.overflow = 'hidden'; 
         document.documentElement.style.overflow = 'hidden'; 
         
-        const bodyGroups = JSON.parse(bodyGroupsEncoded.replace(/&quot;/g, '"'));
-        const journalGroups = JSON.parse(journalGroupsEncoded.replace(/&quot;/g, '"'));
+        const bodyGroups = JSON.parse(decodeURIComponent(bodyGroupsEncoded));
+        const journalGroups = JSON.parse(decodeURIComponent(journalGroupsEncoded));
 
         document.getElementById("weightModal").style.display = "flex";
         document.getElementById("weightLoading").style.display = "block";
@@ -1140,7 +1137,7 @@
         document.documentElement.style.overflow = 'hidden'; 
         
         // 將字串還原為陣列
-        const ids = JSON.parse(idsJsonStr.replace(/&quot;/g, '"'));
+        const ids = JSON.parse(decodeURIComponent(idsJsonStr));
         
         // UI 狀態切換
         document.getElementById("annealingModal").style.display = "flex";
