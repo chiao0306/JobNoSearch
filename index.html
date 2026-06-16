@@ -1061,37 +1061,44 @@
         // === 本體銲補計算 ===
         let bodyWireTotal = 0, bodyFluxTotal = 0, bodyPcTotal = 0;
         let bodyHtml = '';
+        let hasMatchedBody = false; // 👈 新增變數：用來記錄是否有任何一個項目成功配對
 
         if (hasBody) {
             bodyGroups.forEach(group => {
                 const match = matchAnnealingKeyword(group.title);
                 const pc = group.target_pc || 0;
                 if (match) {
+                    hasMatchedBody = true; // 👈 只要有一個配對成功，就標記為 true
                     const wire = (pc * match.wire).toFixed(1);
                     const flux = (pc * match.flux).toFixed(1);
                     bodyWireTotal += pc * match.wire;
                     bodyFluxTotal += pc * match.flux;
                     bodyPcTotal += pc;
-                    // 👇 修改這一行：把 true 換成 match.key
                     bodyHtml += makeCard(group.title, pc, wire, flux, match.key);
                 } else {
-                    // 👇 修改這一行：把 false 換成 null
                     bodyHtml += makeCard(group.title, pc, 0, 0, null);
                 }
             });
-
             document.getElementById("weightBodyRows").innerHTML = bodyHtml;
             
-            document.getElementById("weightBodyTotal").innerHTML =
-                `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
-                `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span>` +
-                `<div style="margin-top: 8px; display: flex; gap: 6px; align-items: center;">` +
-                    `<span style="color:#d84315; font-size:13px; font-weight:bold; white-space: nowrap; flex-shrink: 0;">快速換算：</span>` +
-                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
-                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
-                    `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
-                `</div>` +
-                `<div id="dynamicWeightResult" style="display: none; margin-top: 8px; border-top: 1px dashed #ffcc80; padding-top: 8px;"></div>`;
+            // 👇 判斷要顯示還是隱藏合計區塊
+            const bodyTotalDiv = document.getElementById("weightBodyTotal");
+            if (hasMatchedBody) {
+                bodyTotalDiv.innerHTML =
+                    `Target PC 合計　<span style="color:#555;">${bodyPcTotal} PC</span><br>` +
+                    `合計　　銲線 <span style="color:#c62828;">${bodyWireTotal.toFixed(1)} kg</span> ／ 銲藥 <span style="color:#880e4f;">${bodyFluxTotal.toFixed(1)} kg</span>` +
+                    `<div style="margin-top: 8px; display: flex; gap: 6px; align-items: center;">` +
+                        `<span style="color:#d84315; font-size:13px; font-weight:bold; white-space: nowrap; flex-shrink: 0;">快速換算：</span>` +
+                        `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.5)">0.5</button>` +
+                        `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.7)">0.7</button>` +
+                        `<button class="multiplier-btn" onclick="calcBodyWeight(this, ${bodyWireTotal}, ${bodyFluxTotal}, 0.8)">0.8</button>` +
+                    `</div>` +
+                    `<div id="dynamicWeightResult" style="display: none; margin-top: 8px; border-top: 1px dashed #ffcc80; padding-top: 8px;"></div>`;
+                bodyTotalDiv.style.display = "block"; // 顯示合計區塊
+            } else {
+                bodyTotalDiv.innerHTML = ""; // 清空內容
+                bodyTotalDiv.style.display = "none"; // 隱藏合計區塊
+            }
 
             document.getElementById("weightBodySection").style.display = "block";
         } else {
