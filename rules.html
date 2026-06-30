@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>稽核助手 - 檢查規則說明</title>
+    <style>
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            padding: 15px; 
+            background-color: #f4f4f9; 
+            margin: 0;
+            -webkit-text-size-adjust: 100%;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+        }
+        
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header-section h2 { margin: 0; color: #333; font-size: 1.8rem; }
+        
+        .close-btn {
+            background-color: #6c757d; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .close-btn:hover { background-color: #5a6268; }
+
+        p.intro {
+            color: #555;
+            font-size: 16px;
+            background-color: #fff3e0;
+            padding: 12px 18px;
+            border-left: 4px solid #ff9800;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        h3.section-title {
+            color: #d84315;
+            font-size: 1.3rem;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 📋 表格精美排版 */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px #eee inset;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            min-width: 600px; /* 防止手機版字體過度擠壓 */
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #444;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        th:first-child { width: 25%; }
+        
+        /* 第一欄特殊風格 (檢查項目) */
+        td:first-child {
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #fafbfc;
+            font-size: 14.5px;
+        }
+        td:last-child {
+            color: #444;
+            font-size: 14.5px;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td:last-child { background-color: #fdfdfd; }
+
+        code {
+            background-color: #f1f3f5;
+            color: #c62828;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13.5px;
+            border: 1px solid #e9ecef;
+        }
+
+        ul.exception-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        ul.exception-list li {
+            background-color: #fff5f5;
+            border-left: 4px solid #dc3545;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; border-radius: 0; box-shadow: none; }
+            body { padding: 0; }
+            th, td { padding: 10px; font-size: 14px; }
+            th:first-child { width: 35%; }
+            .header-section h2 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h2>🏭 交貨單稽核系統 - 規則說明</h2>
+        <button class="close-btn" onclick="window.close()">✖ 關閉分頁</button>
+    </div>
+
+    <p class="intro">本工具主要用於自動檢查中機輥輪再生交貨單中的 <b>KEY 錯字</b>、<b>算錯數</b>、<b>漏填資料</b>，確保資料準確度並提升覆核效率。</p>
+
+    <h3 class="section-title">📂 資料提供方式</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>方式</th><th>說明</th></tr></thead>
+            <tbody>
+                <tr><td>📸 拍照上傳</td><td>拍攝紙本單據或掃描 PDF，AI 自動讀取文字（約 30-60 秒，超量產生些微 API 費用）。</td></tr>
+                <tr><td>📊 Excel 上傳</td><td>直接丟入電子檔，速度最快（1 秒且免費）、準確度最高（表格直讀）。</td></tr>
+                <tr><td>📂 JSON 上傳</td><td>用於讀取舊有的系統紀錄檔案。</td></tr>
+                <tr><td>☁️ 巨集一鍵稽核</td><td>系統已部署至 GCP Cloud Run，可直接在 Excel 檔案內利用巨集一鍵執行稽核，完全不用離開 Excel 頁面。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">1. 📋 表頭資訊稽核 (Header Audit)</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>🚨 嚴重混單</td><td>同一份文件中偵測到多種不同的工令單號或工作申請單編號出現在同一份文件中。</td></tr>
+                <tr><td>⚠️ 存放位置錯誤</td><td>依據工令前綴自動判定廠區。例如：W3 開頭必須儲存於 W3 SHOP、W2 開頭為 W2 SHOP、Y461 開頭為 Y461 SHOP、OW 則須為 中龍 SHOP。</td></tr>
+                <tr><td>⚠️ 工令格式錯誤</td><td>單號不符合預設規則（須為 W, R, O, Y 開頭且長度為 10 碼）。內部新增防雜訊機制：O 開頭須含至少 2 個數字，其餘須含至少 6 個數字，且嚴格排除包含 KEY/WAY 等雜訊字眼。</td></tr>
+                <tr><td>⚠️ 工作申請單編號異常</td><td>除了檢查混單外，格式必須為 2 開頭，且長度精準限制為 10 碼或 12 碼。</td></tr>
+                <tr><td>📅 日期不一致與缺失</td><td>整份文件出現兩個以上的預定交貨日或實際交貨日；或是全卷皆未填寫或無法辨識日期。</td></tr>
+                <tr><td>⏰ 逾期交貨</td><td>任一項目的「實際交貨日」晚於「預定交貨日」，系統將自動計算並回報確切延遲天數。</td></tr>
+                <tr><td>📑 頁碼重複</td><td>偵測到相同的頁碼數字於全卷中出現兩次以上（防止重複影印或掃描）。</td></tr>
+                <tr><td>📑 頁碼缺漏/未從頭開始</td><td>嚴格檢查系統擷取到的實體頁碼是否從第 1 頁開始，且必須連續無中斷。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">2. 📏 規格與長約稽核 (Spec & Contract Audit)</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>🛑 長約項次比對</td><td>系統會自動讀取 <code>contract_items.xlsx</code> 執行 100% 嚴格字串比對（經過去除空格、特殊符號後的英數中完美配對）。若完全無法在長約清單中找到吻合項目，即判定為非長約項目並報錯（標題含「報廢」之項目自動豁免此項核對）。</td></tr>
+                <tr><td>⚠️ 規格取代落差</td><td>當系統透過 <code>rules.xlsx</code> 強制更換規格後，若「原始辨識內容」與「強制更換規格」相似度低於 <b>100%</b>（系統比對時會自動保留 "MM" 等關鍵單位以確保精準），會觸發異常提醒人工覆核。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">3. 🔢 工程與數值稽核 (Numerical Audit)</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>⚠️ 規格缺漏/無效</td><td>偵測到項目名稱，但規格欄位為空；或該項目屬於必須嚴格檢查數值之分類，但規格內容解析不出任何有效數字基準。</td></tr>
+                <tr><td>🛑 單位異常 (標題括號)</td><td>標題後方括號內除數字外，單位僅允許填寫「PC」或「SET」，若包含其他文字雜訊將觸發報錯。</td></tr>
+                <tr><td>🛑 數據格式錯誤/缺漏</td><td>數值欄位填寫了 N/A、OK、- 或文字雜訊。若明細完全未填寫任何數據，將觸發「數據缺漏」攔截。</td></tr>
+                <tr><td>🛑 數值異常 (不可為零)</td><td>全域防呆限制，實測數據絕對不可填寫 0 或 0.0，若無實際數值應填寫 N/A 或是保持空白。</td></tr>
+                <tr><td>🛑 單位異常 (整批製程)</td><td><b>熱處理</b>：數量後方必須標示單位「KG」。<br><b>研磨/動平衡</b>：數量後方必須標示單位「IN2」或「IN²」。<br><i>*(若標題含校正、串列式、W3X、內孔、小鋼胚等白名單關鍵字，則豁免單位檢查)*</i></td></tr>
+                <tr><td>🛑 明細異常 (反向檢查)</td><td><b>熱處理</b>：僅需填寫總重量，底下的「編號與尺寸」明細欄位必須保持空白。<br><b>研磨/動平衡</b>：除了總量與單位，底下的明細必須逐筆填寫。</td></tr>
+                <tr><td>🛑 報廢異常</td><td>若標題包含「報廢」，其尺寸明細必須填寫為 N/A 或保留空白，嚴禁填寫實際數值。</td></tr>
+                <tr><td>🛑 豁免異常 (空值與純數字)</td><td>系統強制規定被判定為「豁免」或「SKIP」之項目：<br>1. <b>不可為空</b>：對應欄位必須有文字註記（如 N/A、OK）。<br>2. <b>不可純數字</b>：避免現場誤填為實際尺寸。</td></tr>
+                <tr><td>🛑 尺寸異常分類檢驗</td><td>依不同分類執行防呆演算法：<br>• <b>銲補 (Min Limit)</b>：須為純整數，低於下限或超過上限 20 以上即報錯。<br>• <b>精加工/研磨 (Range)</b>：必須填寫兩位小數，且精準落在公差區間內。<br>• <b>幾何/形位公差</b>：不可為負數，須填兩位小數且不超過上限。<br>• <b>1機310軸頸特規</b>：同編號兩端尺寸差值必須大於等於 8mm。<br>• <b>驅動輥內孔階梯特規</b>：自動檢查數值集中度（差值 < 1mm），限制密集上限。</td></tr>
+                <tr><td>🛑 特規異常 (本體車修)</td><td>針對上限小於等於 150mm 的本體車修項目，若實測值小於下限，頁面備註必須精確包含「依現場需求調整車修尺寸下限」，否則報錯。</td></tr>
+                <tr><td>🛑 數據損壞與單格豁免</td><td>偵測到 <code>[!]</code> 壞軌標記將直接報錯。針對整批項目，若單一數值欄位填寫了數量單位（如 IN, SET），該格自動豁免嚴格數值檢驗。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">4. 🧮 會計與數量匯總稽核 (Accounting Audit)</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>⚠️ 申請與實交差異</td><td>總表內「申請數量」不等於「實交數量」，或兩者皆為 0 / 空白。</td></tr>
+                <tr><td>🛑 單位異常(總表)</td><td>總表單位的嚴格核對：熱處理必須為 <code>KG</code>；研磨/動平衡必須為 <code>IN2</code>；其餘常規項目為 <code>PC</code> 或 <code>SET</code>，絕對不可留空。</td></tr>
+                <tr><td>🛑 統計不符(單項)</td><td>明細標題要求的目標數與實際抄錄有數據之筆數不符（自動結合計價倍率轉換）。</td></tr>
+                <tr><td>⚠️ 編號重複</td><td>同一個工件 ID 在本體清單重複出現 2 次以上，或在軸頸/鍵槽清單重複出現 3 次以上。</td></tr>
+                <tr><td>🛑 明細匯總不符</td><td>總表實交數不等於明細項目經過「運費比重」、「聚合規則 (u_agg)」加總後的總和。</td></tr>
+                <tr><td>👻 幽靈明細</td><td>明細項目名稱無法匹配至總表中的任何一項。</td></tr>
+                <tr><td>🛡️ 語意防撞過濾</td><td>系統配對時嚴格防撞，自動隔離「新品」與「舊品」之項目，避免會計項目錯配。</td></tr>
+                <tr><td>🌊 運費階層與流道</td><td>獨立流道：「新品組裝」直接計入運費。<br>瀑布篩選：舊品拆裝 > 本體未再生 > 本體銲補 > 一般銲補 > 面研磨 > 動平衡。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">5. 🔄 流程與溯源稽核 (Process Audit)</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>🛑 工序尺寸合理性</td><td>透過履歷交叉比對：<br>1. <b>尺寸倒置</b>：例如粗車尺寸小於精車尺寸。<br>2. <b>差值檢驗</b>：本體銲補與再生差值須介於 4~10mm；軸頸銲補與再生差值須介於 3~7mm。</td></tr>
+                <tr><td>🛑 身分衝突</td><td>同一個零件編號「嚴禁」同時出現在「新品組裝」與「舊品拆裝」明細中。<br>申報為「新品」者，嚴禁具備「粗車」紀錄，但在履歷溯源時會自動豁免前置工序斷層。</td></tr>
+                <tr><td>🛑 流道異常(防撞)</td><td>終極防撞演算法：同一工序階段中，不同項目嚴禁認領相同的編號（白名單配對除外），防止複製貼上錯誤。若出現部分交集錯位，主動抓出跨流道誤填。</td></tr>
+                <tr><td>🛑 拆裝池分流</td><td>嚴格區分「一般成人池」與「專屬兒童池（如 W3#1~3機）」，兩者禁止跨池對應。</td></tr>
+                <tr><td>🛑 工序與相依</td><td>有軸頸加工卻無本體紀錄；有銲補卻缺失再生紀錄；軸頸項目強制必須包含「未再生、銲補、再生」完整履歷。</td></tr>
+                <tr><td>🛑 CPLG/DRIVEN 異常</td><td>頭尾屬性不一致，或名稱標註 CPLG 但缺乏 VIP 關鍵字。CPLG 軸頸規格內禁止出現「非」字。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">6. ☁️ 雲端紀錄與例外處理</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>檢查項目</th><th>邏輯與條件</th></tr></thead>
+            <tbody>
+                <tr><td>✅ 雲端同步</td><td>交貨單檢查合格紀錄會自動上傳至 Firebase 結構化資料庫，方便後續快速查詢。</td></tr>
+                <tr><td>🛑 開關控制</td><td>系統支援偵測 <code>STOP_LOGGING</code> 開關（優先讀取 Cloud Run 環境變數），開啟後將直接阻擋寫入，方便除錯。</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="section-title">7. ❗ 無法驗證的情況 (人工作業)</h3>
+    <ul class="exception-list">
+        <li>❌ <b>排版亂掉：</b> 如果你發現明明就是打對卻一堆錯誤，請先檢查 Excel 上方表格欄位是不是合併格錯位了。</li>
+    </ul>
+
+</div>
+
+</body>
+</html>
