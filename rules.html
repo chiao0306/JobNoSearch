@@ -76,16 +76,16 @@
         /* 📋 表格精美排版 */
         .table-wrapper {
             width: 100%;
-            overflow-x: auto;
             border-radius: 8px;
             box-shadow: 0 0 0 1px #eee inset;
             margin-bottom: 20px;
+            overflow: hidden;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            min-width: 600px; 
+            min-width: 600px; /* 電腦版維持最小寬度 */
         }
         th, td {
             padding: 14px 16px;
@@ -99,7 +99,7 @@
             font-weight: 600;
             font-size: 15px;
         }
-        th:first-child { width: 28%; }
+        th:first-child { width: 30%; }
         
         td:first-child {
             font-weight: bold;
@@ -139,11 +139,23 @@
             color: #333;
         }
 
+        /* 📱 手機版專屬樣式 (解決超出螢幕與破版問題) */
         @media (max-width: 600px) {
-            .container { padding: 15px; border-radius: 0; box-shadow: none; }
+            .container { padding: 12px; border-radius: 0; box-shadow: none; }
             body { padding: 0; }
-            th, td { padding: 10px; font-size: 14px; }
-            th:first-child { width: 35%; }
+            table { 
+                min-width: 100%; 
+                table-layout: fixed; /* 強制版面依照比例分配，不被長文字撐開 */
+            } 
+            th, td { 
+                padding: 12px 8px; 
+                font-size: 14px; 
+                word-break: break-word; /* 允許長文字自動換行 */
+                overflow-wrap: anywhere; 
+            }
+            th:first-child, td:first-child { 
+                width: 38%; /* 給左邊檢查項目稍微多一點點空間 */
+            }
             .header-section h2 { font-size: 1.4rem; }
         }
     </style>
