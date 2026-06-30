@@ -412,8 +412,14 @@
     </div>
 
     <details class="advanced-filter">
+    <details class="advanced-filter">
         <summary>▶ 展開進階篩選 (日期、筆數、排序)</summary>
         <div class="filter-content">
+            
+            <div style="flex: 100%; display: flex; gap: 10px; margin-bottom: 5px;">
+                <button type="button" style="background-color: #17a2b8; width: auto; padding: 6px 14px; font-size: 13.5px; border-radius: 6px;" onclick="setToday()">🎯 篩選今日</button>
+                <button type="button" class="secondary" style="width: auto; padding: 6px 14px; font-size: 13.5px; border-radius: 6px;" onclick="clearDate()">✖ 清除日期</button>
+            </div>
             <div class="input-group">
                 <label>📅 開始日期</label>
                 <div class="date-input-wrapper">
@@ -559,6 +565,26 @@
             this.blur();            
         }
     });
+
+    // ===== 👇 新增：設定今日與清除日期功能 =====
+    window.setToday = function() {
+        const today = new Date();
+        const rocYear = today.getFullYear() - 1911; // 轉換為民國年
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${rocYear}${mm}${dd}`;
+        
+        // 將計算好的今天日期自動填入開始與結束欄位
+        document.getElementById('startDate').value = todayStr;
+        document.getElementById('endDate').value = todayStr;
+    }
+
+    window.clearDate = function() {
+        // 清空開始與結束欄位
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+    }
+    // ===== 👆 新增結束 =====
 
     window.pickDate = function(targetId, dateVal) {
         if (!dateVal) return;
